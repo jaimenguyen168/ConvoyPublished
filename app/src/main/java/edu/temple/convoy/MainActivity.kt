@@ -1,15 +1,19 @@
 package edu.temple.convoy
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.ui.theme.ConvoyLabTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,7 +26,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    val context = applicationContext
+                    MyApp(context)
                 }
             }
         }
@@ -30,17 +35,22 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
+fun MyApp(
+    context: Context
+) {
+    val navController = rememberNavController()
+    val locationViewModel: LocationViewModel = viewModel()
+    Navigation(
+        context = context,
+        locationViewModel = locationViewModel,
+        navController = navController
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ConvoyLabTheme {
-        Greeting("Android")
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    ConvoyLabTheme {
+//        MyApp(app)
+//    }
+//}
