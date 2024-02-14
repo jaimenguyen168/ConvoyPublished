@@ -19,6 +19,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -61,7 +63,8 @@ fun LandingScreen(
 ) {
     val locationUtil = LocationUtil(context = context)
 
-    val locationState = locationViewModel.location.observeAsState().value
+//    val locationState by locationViewModel.location.collectAsState()
+
     val scaffoldState = rememberScaffoldState()
     var showCreateConvoyDialog by remember { mutableStateOf(false) }
     var showJoinConvoyDialog by remember { mutableStateOf(false) }
@@ -112,9 +115,8 @@ fun LandingScreen(
                 when (permissionState.status) {
                     is PermissionStatus.Granted -> {
                         locationUtil.getLocationUpdates(locationViewModel)
-                        if (locationState != null) {
-                            GoogleMapView(location = locationState)
-                        }
+                        GoogleMapView(locationViewModel = locationViewModel)
+//                        GoogleMapView(location = locationState)
                     }
                     is PermissionStatus.Denied -> {
                         Text("Map can't be displayed. Please grant permission in settings.")

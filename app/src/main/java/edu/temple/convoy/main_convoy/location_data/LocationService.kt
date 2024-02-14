@@ -25,10 +25,12 @@ class LocationService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient: LocationClient
+    private lateinit var locationViewModel: LocationViewModel
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
+        locationViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(LocationViewModel::class.java)
         locationClient = LocationUtil(
             context = applicationContext
         )
@@ -53,7 +55,7 @@ class LocationService : Service() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         locationClient
-            .getLocationUpdates(LocationViewModel())
+            .getLocationUpdates(locationViewModel)
             .catch { e -> e.printStackTrace() }
             .onEach { location ->
                 val lat = location.latitude

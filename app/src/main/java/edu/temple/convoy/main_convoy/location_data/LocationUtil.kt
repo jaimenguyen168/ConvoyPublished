@@ -29,7 +29,7 @@ class LocationUtil(
     @SuppressLint("MissingPermission")
     override fun getLocationUpdates(viewModel: LocationViewModel) : Flow<LocationData> {
         return callbackFlow {
-            if(!context.hasLocationPermission()) {›
+            if(!context.hasLocationPermission()) {
                 throw LocationClient.LocationException("Missing location permission")
             }
 

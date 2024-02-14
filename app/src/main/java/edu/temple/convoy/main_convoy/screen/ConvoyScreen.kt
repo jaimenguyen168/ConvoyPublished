@@ -1,6 +1,7 @@
 package edu.temple.convoy.main_convoy.screen
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,7 +56,8 @@ fun ConvoyScreen(
     val username = sharedPreferences.getString("username", "") ?: ""
     val convoyId = sharedPreferences.getString("convoy_id", "") ?: ""
 
-    val locationState = locationViewModel.location.observeAsState().value
+    val locationState by locationViewModel.location.collectAsState()
+    Log.i("Location ", "$locationState")
 
     LaunchedEffect(Unit) {
         Intent(context, LocationService::class.java).apply {
@@ -98,14 +100,11 @@ fun ConvoyScreen(
                         .padding(16.dp),
                     elevation = 5.dp
                 ) {
-                    if (locationState != null) {
-                        GoogleMapView(location = locationState)
-                    }
+                    GoogleMapView(locationViewModel = locationViewModel)
+//                    GoogleMapView(location = locationState)
                 }
 
-                if (locationState != null) {
-                    Text(text = locationState.toString())
-                }
+                Text(text = locationState.toString())
             }
 
             if (showLeaveConvoyDialog) {
