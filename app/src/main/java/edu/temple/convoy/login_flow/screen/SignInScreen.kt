@@ -109,8 +109,8 @@ fun SignInScreen(
                                 "$this@run"
                             )
                         }
-
                         onSignInSuccess()
+
                     } else {
                         showToast(
                             context,

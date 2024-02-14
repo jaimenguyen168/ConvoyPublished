@@ -56,8 +56,7 @@ fun ConvoyScreen(
     val username = sharedPreferences.getString("username", "") ?: ""
     val convoyId = sharedPreferences.getString("convoy_id", "") ?: ""
 
-    val locationState by locationViewModel.location.collectAsState()
-    Log.i("Location ", "$locationState")
+    val locationState by locationViewModel.location.observeAsState()
 
     LaunchedEffect(Unit) {
         Intent(context, LocationService::class.java).apply {

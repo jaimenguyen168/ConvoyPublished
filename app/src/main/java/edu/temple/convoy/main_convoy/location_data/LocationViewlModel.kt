@@ -14,13 +14,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class LocationViewModel : ViewModel() {
-    private val _location = MutableStateFlow(LocationData(12.0, 12.0))
-    val location : StateFlow<LocationData> = _location.asStateFlow()
+    private var _location = MutableLiveData(LocationData(0.0, 0.0))
+    val location = _location
 
     fun updateLocation(newLocation: LocationData) {
-        viewModelScope.launch {
-            _location.value = newLocation
-        }
+        _location.value = newLocation
 //        showLoc()
     }
 

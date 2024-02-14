@@ -27,60 +27,72 @@ class LocationUtil(
     private var client: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
     @SuppressLint("MissingPermission")
-    override fun getLocationUpdates(viewModel: LocationViewModel) : Flow<LocationData> {
-        return callbackFlow {
-            if(!context.hasLocationPermission()) {
-                throw LocationClient.LocationException("Missing location permission")
-            }
+    override fun getLocationUpdates(viewModel: LocationViewModel) {
+        if(!context.hasLocationPermission()) {
+            throw LocationClient.LocationException("Missing location permission")
+        }
 
-            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-            if(!isGpsEnabled && !isNetworkEnabled) {
-                throw LocationClient.LocationException("GPS is disabled")
-            }
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        if(!isGpsEnabled && !isNetworkEnabled) {
+            throw LocationClient.LocationException("GPS is disabled")
+        }
 
-            val locationCallback = object : LocationCallback() {
-                @SuppressLint("MissingPermission")
-                override fun onLocationResult(locationResult: LocationResult) {
-                    super.onLocationResult(locationResult)
-                    locationResult.lastLocation?.let {
+        val locationCallback = object : LocationCallback() {
+            @SuppressLint("MissingPermission")
+            override fun onLocationResult(locationResult: LocationResult) {
+                super.onLocationResult(locationResult)
+                locationResult.lastLocation?.let {currentLocation ->
+                    if (previousLocation == null) {
                         val newLocation = LocationData(
-                            latitude = it.latitude,
-                            longitude = it.longitude
+                            latitude = currentLocation.latitude,
+                            longitude = currentLocation.longitude
                         )
-                        launch { send(newLocation) }
                         viewModel.updateLocation(newLocation)
-                        previousLocation?.let { oldLocation ->
-                            val distance = oldLocation.distanceTo(it)
-                            if (distance >= 10) {
-                                val location = LocationData(
-                                    latitude = newLocation.latitude,
-                                    longitude = newLocation.longitude)
-                                launch { send(location) }
-                                viewModel.updateLocation(location)
-                            }
+                        previousLocation = currentLocation
+                    } else {
+                        val distance = previousLocation!!.distanceTo(currentLocation)
+                        if (distance >= 10) {
+                            val newLocation = LocationData(
+                                latitude = currentLocation.latitude,
+                                longitude = currentLocation.longitude
+                            )
+                            viewModel.updateLocation(newLocation)
+                            previousLocation = currentLocation
                         }
                     }
                 }
-            }
-
-            val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
-                .setWaitForAccurateLocation(false)
-                .setMinUpdateIntervalMillis(2000)
-                .setMaxUpdateDelayMillis(1000)
-                .build()
-
-            client.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                Looper.getMainLooper()
-            )
-
-            awaitClose {
-                client.removeLocationUpdates(locationCallback)
+//                locationResult.lastLocation?.let {
+//                    val newLocation = LocationData(
+//                        latitude = it.latitude,
+//                        longitude = it.longitude
+//                    )
+//                    viewModel.updateLocation(newLocation)
+//                    previousLocation?.let { oldLocation ->
+//                        val distance = oldLocation.distanceTo(it)
+//                        if (distance >= 10) {
+//                            val location = LocationData(
+//                                latitude = newLocation.latitude,
+//                                longitude = newLocation.longitude)
+//                            viewModel.updateLocation(location)
+//                        }
+//                    }
+//                }
             }
         }
+
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
+            .setWaitForAccurateLocation(false)
+            .setMinUpdateIntervalMillis(2000)
+            .setMaxUpdateDelayMillis(1000)
+            .build()
+
+        client.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
     }
 }
 

@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -26,13 +28,19 @@ import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 @Composable
 fun GoogleMapView(
     modifier: Modifier = Modifier,
+//    location: LocationData
     locationViewModel: LocationViewModel
 ) {
-    val locationState by locationViewModel.location.collectAsStateWithLifecycle()
+    val locationState by locationViewModel.location.observeAsState()
     Log.i("Location ", "$locationState")
 
     val userLocation = remember {
-        mutableStateOf(LatLng(locationState.latitude, locationState.longitude))
+        mutableStateOf(LatLng(locationState!!.latitude, locationState!!.longitude))
+    }
+//    Log.i("location", "$userLocation")
+
+    LaunchedEffect(locationState) {
+        userLocation.value = LatLng(locationState!!.latitude, locationState!!.longitude)
     }
 
     val cameraPositionState = rememberCameraPositionState {
@@ -46,7 +54,13 @@ fun GoogleMapView(
     ) {
         Marker(
             state = MarkerState(position = userLocation.value),
-            title = "My current location"
+            title = "My current location",
+            draggable = true,
+
         )
+    }
+
+    LaunchedEffect(userLocation.value) {
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(userLocation.value, 12f)
     }
 }

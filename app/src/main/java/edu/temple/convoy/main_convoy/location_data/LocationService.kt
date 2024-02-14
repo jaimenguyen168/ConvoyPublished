@@ -54,18 +54,7 @@ class LocationService : Service() {
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        locationClient
-            .getLocationUpdates(locationViewModel)
-            .catch { e -> e.printStackTrace() }
-            .onEach { location ->
-                val lat = location.latitude
-                val long = location.longitude
-                val updatedNotification = notification.setContentText(
-                    "Location: ($lat, $long)"
-                )
-                notificationManager.notify(1, updatedNotification.build())
-            }
-            .launchIn(serviceScope)
+        locationClient.getLocationUpdates(locationViewModel)
 
         startForeground(1, notification.build())
     }
