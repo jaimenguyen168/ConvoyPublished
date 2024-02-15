@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import edu.temple.convoy.login_flow.data.LoginState
 import edu.temple.convoy.login_flow.screen.SignInScreen
 import edu.temple.convoy.login_flow.screen.SignUpScreen
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
@@ -16,11 +17,12 @@ import edu.temple.convoy.main_convoy.screen.LandingScreen
 fun Navigation(
     context: Context,
     locationViewModel: LocationViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    startDestination: String
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.SignInScreen.route
+        startDestination = startDestination
     ) {
         composable(Screen.SignInScreen.route) {
             SignInScreen(
@@ -30,6 +32,7 @@ fun Navigation(
                     }
                 },
                 onSignInSuccess = {
+                    LoginState.setLoginState(context, true)
                     navController.navigate(Screen.LandingScreen.route)
                 }
             )
@@ -55,6 +58,7 @@ fun Navigation(
                     }
                 },
                 onSignOut = {
+                    LoginState.setLoginState(context, false)
                     navController.navigate(Screen.SignInScreen.route) {
                         popUpTo(Screen.LandingScreen.route) { inclusive = true }
                     }

@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import edu.temple.convoy.login_flow.data.LoginState
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.ui.theme.ConvoyLabTheme
 
@@ -40,12 +41,19 @@ fun MyApp(
 ) {
     val navController = rememberNavController()
     val locationViewModel: LocationViewModel = viewModel()
+
+    val isLoggedIn = LoginState.isLoggedIn(context)
+    val startDestination = if (isLoggedIn) Screen.LandingScreen.route else Screen.SignInScreen.route
+
     Navigation(
         context = context,
         locationViewModel = locationViewModel,
-        navController = navController
+        navController = navController,
+        startDestination = startDestination
     )
 }
+
+
 
 //@Preview(showBackground = true)
 //@Composable
