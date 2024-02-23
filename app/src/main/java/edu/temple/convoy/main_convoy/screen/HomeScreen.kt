@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,10 +18,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,15 +43,15 @@ import edu.temple.convoy.main_convoy.location_data.LocationUtil
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.main_convoy.permission.RequestLocationPermission
 import edu.temple.convoy.ui.components.CustomTopAppBar
-import edu.temple.convoy.ui.components.CustomizedDialog
-import edu.temple.convoy.ui.components.CustomizedFloatingAddButton
-import edu.temple.convoy.ui.components.CustomizedText
+import edu.temple.convoy.ui.components.CustomDialog
+import edu.temple.convoy.ui.components.CustomFloatingAddButton
+import edu.temple.convoy.ui.components.CustomText
 import edu.temple.convoy.ui.components.GoogleMapView
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun LandingScreen(
+fun HomeScreen(
     context: Context,
     locationViewModel: LocationViewModel,
     onCreateAConvoy: () -> Unit,
@@ -93,7 +89,7 @@ fun LandingScreen(
                  )
         },
         floatingActionButton = {
-            CustomizedFloatingAddButton {
+            CustomFloatingAddButton {
                 showCreateConvoyDialog = true
             }
         }
@@ -116,7 +112,6 @@ fun LandingScreen(
                     is PermissionStatus.Granted -> {
                         locationUtil.getLocationUpdates(locationViewModel)
                         GoogleMapView(locationViewModel = locationViewModel)
-//                        GoogleMapView(location = locationState)
                     }
                     is PermissionStatus.Denied -> {
                         Text("Map can't be displayed. Please grant permission in settings.")
@@ -127,7 +122,7 @@ fun LandingScreen(
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                CustomizedText(
+                CustomText(
                     text = "Current Open Convoys",
                     fontWeight = FontWeight.SemiBold
                 )
@@ -149,7 +144,7 @@ fun LandingScreen(
         }
 
         if (showCreateConvoyDialog) {
-            CustomizedDialog(
+            CustomDialog(
                 title = "Create a Convoy",
                 content = "Please click the button below to confirm to create a new Convoy",
                 onDismiss = { showCreateConvoyDialog = false },
@@ -187,7 +182,7 @@ fun LandingScreen(
         }
 
         if (showJoinConvoyDialog) {
-            CustomizedDialog(
+            CustomDialog(
                 title = "Convoy $currentSelectedConvoy",
                 content = "Please confirm if you want to join this convoy.",
                 onDismiss = { showJoinConvoyDialog = false },
@@ -196,7 +191,7 @@ fun LandingScreen(
         }
 
         if (showSignOutDialog) {
-            CustomizedDialog(
+            CustomDialog(
                 title = "Log Out",
                 content = "Please confirm if you want to log out.",
                 onDismiss = { showSignOutDialog = false },

@@ -3,7 +3,6 @@ package edu.temple.convoy.ui.components
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +21,7 @@ import androidx.compose.ui.text.withStyle
 import edu.temple.convoy.ui.theme.Purple40
 
 @Composable
-fun CustomizedText(
+fun CustomText(
     text: String,
     textAlign: TextAlign = TextAlign.Start,
     fontSize: TextUnit = 18.sp,
@@ -47,7 +46,7 @@ fun CustomizedText(
 }
 
 @Composable
-fun CustomizedClickableText(
+fun CustomClickableText(
     text: String,
     goToText: String,
     onTextClick: () -> Unit

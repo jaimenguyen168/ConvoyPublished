@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun CustomizedDivider(
+fun CustomDivider(
 
 ) {
     Row(
@@ -50,5 +50,5 @@ fun CustomizedDivider(
 @Preview(showBackground = true)
 @Composable
 fun PreviewDivider() {
-    CustomizedDivider()
+    CustomDivider()
 }

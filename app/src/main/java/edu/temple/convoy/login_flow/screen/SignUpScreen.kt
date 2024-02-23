@@ -23,15 +23,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.preference.PreferenceManager
 import edu.temple.convoy.R
 import edu.temple.convoy.login_flow.data.RetrofitClient
-import edu.temple.convoy.ui.components.CustomizedButton
-import edu.temple.convoy.ui.components.CustomizedClickableText
-import edu.temple.convoy.ui.components.CustomizedDivider
-import edu.temple.convoy.ui.components.CustomizedOutlinedPasswordField
-import edu.temple.convoy.ui.components.CustomizedOutlinedTextField
-import edu.temple.convoy.ui.components.CustomizedText
+import edu.temple.convoy.ui.components.CustomButton
+import edu.temple.convoy.ui.components.CustomClickableText
+import edu.temple.convoy.ui.components.CustomDivider
+import edu.temple.convoy.ui.components.CustomOutlinedPasswordField
+import edu.temple.convoy.ui.components.CustomOutlinedTextField
+import edu.temple.convoy.ui.components.CustomText
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,21 +52,21 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        CustomizedText(
+        CustomText(
             text = stringResource(id = R.string.greeting),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp
         )
 
-        CustomizedText(
+        CustomText(
             text = stringResource(id = R.string.create_account),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Normal,
             fontSize = 18.sp
         )
 
-        CustomizedOutlinedTextField(
+        CustomOutlinedTextField(
             value = firstname,
             label = stringResource(id = R.string.first_name),
             icon = R.drawable.profile,
@@ -75,7 +74,7 @@ fun SignUpScreen(
                 firstname = it
             }
         )
-        CustomizedOutlinedTextField(
+        CustomOutlinedTextField(
             value = lastname,
             label = stringResource(id = R.string.last_name),
             icon = R.drawable.profile,
@@ -83,7 +82,7 @@ fun SignUpScreen(
                 lastname = it
             }
         )
-        CustomizedOutlinedTextField(
+        CustomOutlinedTextField(
             value = username,
             label = stringResource(id = R.string.user_name),
             icon = R.drawable.user,
@@ -92,7 +91,7 @@ fun SignUpScreen(
             }
         )
 
-        CustomizedOutlinedPasswordField(
+        CustomOutlinedPasswordField(
             value = password,
             label = stringResource(id = R.string.password),
             icon = R.drawable.password,
@@ -103,7 +102,7 @@ fun SignUpScreen(
 
         Spacer(modifier = Modifier.height(100.dp))
 
-        CustomizedButton(
+        CustomButton(
             text = stringResource(id = R.string.register),
             onClick = {
                 coroutineScope.launch {
@@ -136,9 +135,9 @@ fun SignUpScreen(
             }
         )
 
-        CustomizedDivider()
+        CustomDivider()
 
-        CustomizedClickableText(
+        CustomClickableText(
             text = stringResource(id = R.string.have_account),
             goToText = stringResource(id = R.string.sign_in)
         ) {

@@ -63,22 +63,6 @@ class LocationUtil(
                         }
                     }
                 }
-//                locationResult.lastLocation?.let {
-//                    val newLocation = LocationData(
-//                        latitude = it.latitude,
-//                        longitude = it.longitude
-//                    )
-//                    viewModel.updateLocation(newLocation)
-//                    previousLocation?.let { oldLocation ->
-//                        val distance = oldLocation.distanceTo(it)
-//                        if (distance >= 10) {
-//                            val location = LocationData(
-//                                latitude = newLocation.latitude,
-//                                longitude = newLocation.longitude)
-//                            viewModel.updateLocation(location)
-//                        }
-//                    }
-//                }
             }
         }
 

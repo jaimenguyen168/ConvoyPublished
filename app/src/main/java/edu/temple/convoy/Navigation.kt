@@ -2,7 +2,6 @@ package edu.temple.convoy
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,7 +10,7 @@ import edu.temple.convoy.login_flow.screen.SignInScreen
 import edu.temple.convoy.login_flow.screen.SignUpScreen
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.main_convoy.screen.ConvoyScreen
-import edu.temple.convoy.main_convoy.screen.LandingScreen
+import edu.temple.convoy.main_convoy.screen.HomeScreen
 
 @Composable
 fun Navigation(
@@ -49,7 +48,7 @@ fun Navigation(
         }
 
         composable(Screen.LandingScreen.route) {
-            LandingScreen(
+            HomeScreen(
                 context = context,
                 locationViewModel = locationViewModel,
                 onCreateAConvoy = {

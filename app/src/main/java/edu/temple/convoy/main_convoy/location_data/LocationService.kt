@@ -61,11 +61,7 @@ class LocationService : Service() {
 
     private fun stop() {
         Log.e("Service", "Service Stops")
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            stopForeground(STOP_FOREGROUND_DETACH)
-        } else {
-            stopForeground(true)
-        }
+        stopForeground(STOP_FOREGROUND_DETACH)
         stopSelf()
     }
 
