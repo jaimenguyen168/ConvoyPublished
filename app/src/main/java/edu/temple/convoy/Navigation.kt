@@ -51,7 +51,7 @@ fun Navigation(
             HomeScreen(
                 context = context,
                 locationViewModel = locationViewModel,
-                onCreateAConvoy = {
+                toConvoy = {
                     navController.navigate(Screen.ConvoyScreen.route) {
                         popUpTo(Screen.LandingScreen.route) { inclusive = true }
                     }
@@ -68,7 +68,7 @@ fun Navigation(
         composable(Screen.ConvoyScreen.route) {
             ConvoyScreen(
                 locationViewModel = locationViewModel,
-                backToLandingScreen = {
+                backToHomeScreen = {
                     navController.navigate(Screen.LandingScreen.route) {
                         popUpTo(Screen.ConvoyScreen.route) { inclusive = true }
                     }

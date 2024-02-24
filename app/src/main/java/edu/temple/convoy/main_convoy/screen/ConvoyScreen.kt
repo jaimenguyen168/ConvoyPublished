@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Card
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,18 +28,19 @@ import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.ui.components.GoogleMapView
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import edu.temple.convoy.R
+import edu.temple.convoy.ui.Constant
+import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomTopAppBar
 import edu.temple.convoy.ui.components.CustomDialog
 
 @Composable
 fun ConvoyScreen(
     locationViewModel: LocationViewModel,
-    backToLandingScreen: () -> Unit
+    backToHomeScreen: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -49,8 +50,7 @@ fun ConvoyScreen(
     val sessionKey = sharedPreferences.getString("session_key", "") ?: ""
     val username = sharedPreferences.getString("username", "") ?: ""
     val convoyId = sharedPreferences.getString("convoy_id", "") ?: ""
-
-    val locationState by locationViewModel.location.observeAsState()
+    val userAction = sharedPreferences.getString(Constant.ACTION, "")
 
     LaunchedEffect(Unit) {
         Intent(context, LocationService::class.java).apply {
@@ -59,7 +59,7 @@ fun ConvoyScreen(
         }
     }
 
-    var showLeaveConvoyDialog by remember { mutableStateOf(false) }
+    var showEndConvoyDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -67,7 +67,7 @@ fun ConvoyScreen(
                 title = convoyId,
                 actionIcon = R.drawable.baseline_logout_24,
                 navIcon = R.drawable.channel,
-                onActionClick = { showLeaveConvoyDialog = true },
+                onActionClick = { showEndConvoyDialog = true },
                 onNavClick = {}
             )
         }
@@ -95,13 +95,43 @@ fun ConvoyScreen(
                 ) {
                     GoogleMapView(locationViewModel = locationViewModel)
                 }
+
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .wrapContentHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CustomButton(
+                        text = if (userAction == Constant.CREATE) "End Convoy" else "Leave Convoy",
+                        onClick = {
+                            coroutineScope.launch {
+                                val response = RetrofitClient.instance.leaveConvoy(
+                                    action = Constant.LEAVE,
+                                    username = username,
+                                    sessionKey = sessionKey,
+                                    convoyId = convoyId
+                                )
+                                if (response.status == "SUCCESS") {
+                                    backToHomeScreen()
+                                } else {
+                                    showToast(
+                                        context,
+                                        "${response.message}"
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
             }
 
-            if (showLeaveConvoyDialog) {
+            if (showEndConvoyDialog) {
                 CustomDialog(
                     title = "Leave Convoy",
                     content = "Please confirm if you want to leave this convoy.",
-                    onDismiss = { showLeaveConvoyDialog = false },
+                    onDismiss = { showEndConvoyDialog = false },
                     onConfirm = {
                         coroutineScope.launch {
 
@@ -117,7 +147,7 @@ fun ConvoyScreen(
                                     action = LocationService.ACTION_STOP
                                     startForegroundService(context, this)
                                 }
-                                backToLandingScreen()
+                                backToHomeScreen()
                             } else {
                                 showToast(
                                     context,

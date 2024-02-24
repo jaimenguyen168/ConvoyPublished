@@ -84,6 +84,9 @@ dependencies {
     // Permission
     implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
 
+    // Extended Icons
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
