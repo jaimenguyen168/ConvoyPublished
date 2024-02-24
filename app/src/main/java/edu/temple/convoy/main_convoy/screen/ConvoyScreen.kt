@@ -60,6 +60,7 @@ fun ConvoyScreen(
     }
 
     var showEndConvoyDialog by remember { mutableStateOf(false) }
+    var showLeaveConvoyDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -67,7 +68,7 @@ fun ConvoyScreen(
                 title = convoyId,
                 actionIcon = R.drawable.baseline_logout_24,
                 navIcon = R.drawable.channel,
-                onActionClick = { showEndConvoyDialog = true },
+                onActionClick = {},
                 onNavClick = {}
             )
         }
@@ -106,22 +107,8 @@ fun ConvoyScreen(
                     CustomButton(
                         text = if (userAction == Constant.CREATE) "End Convoy" else "Leave Convoy",
                         onClick = {
-                            coroutineScope.launch {
-                                val response = RetrofitClient.instance.leaveConvoy(
-                                    action = Constant.LEAVE,
-                                    username = username,
-                                    sessionKey = sessionKey,
-                                    convoyId = convoyId
-                                )
-                                if (response.status == "SUCCESS") {
-                                    backToHomeScreen()
-                                } else {
-                                    showToast(
-                                        context,
-                                        "${response.message}"
-                                    )
-                                }
-                            }
+                            if (userAction == Constant.CREATE) showEndConvoyDialog = true
+                            else showLeaveConvoyDialog = true
                         }
                     )
                 }
@@ -129,8 +116,8 @@ fun ConvoyScreen(
 
             if (showEndConvoyDialog) {
                 CustomDialog(
-                    title = "Leave Convoy",
-                    content = "Please confirm if you want to leave this convoy.",
+                    title = "End Convoy",
+                    content = "Please confirm if you want to end this convoy.",
                     onDismiss = { showEndConvoyDialog = false },
                     onConfirm = {
                         coroutineScope.launch {
@@ -147,6 +134,32 @@ fun ConvoyScreen(
                                     action = LocationService.ACTION_STOP
                                     startForegroundService(context, this)
                                 }
+                                backToHomeScreen()
+                            } else {
+                                showToast(
+                                    context,
+                                    "${response.message}"
+                                )
+                            }
+                        }
+                    }
+                )
+            }
+
+            if (showLeaveConvoyDialog) {
+                CustomDialog(
+                    title = "Leave Convoy",
+                    content = "Please confirm if you want to leave this convoy.",
+                    onDismiss = { showLeaveConvoyDialog = false },
+                    onConfirm = {
+                        coroutineScope.launch {
+                            val response = RetrofitClient.instance.leaveConvoy(
+                                action = Constant.LEAVE,
+                                username = username,
+                                sessionKey = sessionKey,
+                                convoyId = convoyId
+                            )
+                            if (response.status == "SUCCESS") {
                                 backToHomeScreen()
                             } else {
                                 showToast(
