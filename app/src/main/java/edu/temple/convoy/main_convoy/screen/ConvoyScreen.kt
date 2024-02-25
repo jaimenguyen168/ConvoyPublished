@@ -1,6 +1,7 @@
 package edu.temple.convoy.main_convoy.screen
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.ui.components.GoogleMapView
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,6 +54,9 @@ fun ConvoyScreen(
     val convoyId = sharedPreferences.getString("convoy_id", "") ?: ""
     val userAction = sharedPreferences.getString(Constant.ACTION, "")
 
+    var showEndConvoyDialog by remember { mutableStateOf(false) }
+    var showLeaveConvoyDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         Intent(context, LocationService::class.java).apply {
             action = LocationService.ACTION_START
@@ -59,8 +64,27 @@ fun ConvoyScreen(
         }
     }
 
-    var showEndConvoyDialog by remember { mutableStateOf(false) }
-    var showLeaveConvoyDialog by remember { mutableStateOf(false) }
+    val location by locationViewModel.location.observeAsState()
+
+    LaunchedEffect(location) {
+        val response = RetrofitClient.instance.updateMyLocation(
+            action = Constant.UPDATE,
+            username = username,
+            sessionKey = sessionKey,
+            convoyId = convoyId,
+            latitude = location?.latitude.toString(),
+            longitude = location?.longitude.toString()
+        )
+
+        if (response.status == "SUCCESS") {
+            Log.i("Location sent", "$location")
+        } else {
+            showToast(
+                context,
+                "${response.message}"
+            )
+        }
+    }
 
     Scaffold(
         topBar = {

@@ -127,7 +127,6 @@ fun HomeScreen(
                     text = "Join a Convoy by entering its ID",
                     fontWeight = FontWeight.SemiBold
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
                 CustomOutlinedTextField(
                     value = convoyId,
@@ -137,9 +136,10 @@ fun HomeScreen(
                         convoyId = id
                     }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 CustomButton(
+                    modifier = Modifier.padding(16.dp),
                     text = "Enter",
                     onClick = {
                         showJoinConvoyDialog = true
