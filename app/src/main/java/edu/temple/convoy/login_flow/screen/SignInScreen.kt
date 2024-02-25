@@ -1,7 +1,5 @@
 package edu.temple.convoy.login_flow.screen
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,12 +24,12 @@ import androidx.compose.ui.unit.sp
 import androidx.preference.PreferenceManager
 import edu.temple.convoy.R
 import edu.temple.convoy.login_flow.data.RetrofitClient
-import edu.temple.convoy.ui.components.CustomizedButton
-import edu.temple.convoy.ui.components.CustomizedClickableText
-import edu.temple.convoy.ui.components.CustomizedDivider
-import edu.temple.convoy.ui.components.CustomizedOutlinedPasswordField
-import edu.temple.convoy.ui.components.CustomizedOutlinedTextField
-import edu.temple.convoy.ui.components.CustomizedText
+import edu.temple.convoy.ui.components.CustomButton
+import edu.temple.convoy.ui.components.CustomClickableText
+import edu.temple.convoy.ui.components.CustomDivider
+import edu.temple.convoy.ui.components.CustomOutlinedPasswordField
+import edu.temple.convoy.ui.components.CustomOutlinedTextField
+import edu.temple.convoy.ui.components.CustomText
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,21 +51,21 @@ fun SignInScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        CustomizedText(
+        CustomText(
             text = stringResource(id = R.string.greeting),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp
         )
 
-        CustomizedText(
+        CustomText(
             text = stringResource(id = R.string.sign_in_message),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Normal,
             fontSize = 18.sp
         )
 
-        CustomizedOutlinedTextField(
+        CustomOutlinedTextField(
             value = username,
             label = stringResource(id = R.string.user_name),
             icon = R.drawable.user,
@@ -76,7 +74,7 @@ fun SignInScreen(
             }
         )
 
-        CustomizedOutlinedPasswordField(
+        CustomOutlinedPasswordField(
             value = password,
             label = stringResource(id = R.string.password),
             icon = R.drawable.password,
@@ -87,7 +85,7 @@ fun SignInScreen(
 
         Spacer(modifier = Modifier.height(100.dp))
 
-        CustomizedButton(
+        CustomButton(
             text = stringResource(id = R.string.sign_in),
             onClick = {
                 coroutineScope.launch {
@@ -124,9 +122,9 @@ fun SignInScreen(
             }
         )
 
-        CustomizedDivider()
+        CustomDivider()
 
-        CustomizedClickableText(
+        CustomClickableText(
             text = stringResource(id = R.string.no_account),
             goToText = stringResource(id = R.string.register)
         ) {

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -25,7 +24,7 @@ import androidx.compose.ui.window.DialogProperties
 import edu.temple.convoy.ui.theme.Purple40
 
 @Composable
-fun CustomizedDialog(
+fun CustomDialog(
     title: String,
     content: String,
     onDismiss: () -> Unit,
@@ -63,7 +62,7 @@ fun CustomizedDialog(
 
                 Divider(Modifier.padding(16.dp))
 
-                CustomizedText(
+                CustomText(
                     text = content,
                     fontSize = 18.sp,
                     textAlign = TextAlign.Center
@@ -77,7 +76,7 @@ fun CustomizedDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    CustomizedButton(
+                    CustomButton(
                         text = "Cancel",
                         onClick = { onDismiss() },
                         modifier = Modifier
@@ -85,7 +84,7 @@ fun CustomizedDialog(
                             .weight(1f)
                     )
 
-                    CustomizedButton(
+                    CustomButton(
                         text = "Confirm",
                         onClick = { onConfirm() },
                         modifier = Modifier
@@ -102,5 +101,5 @@ fun CustomizedDialog(
 @Preview(showBackground = true)
 @Composable
 fun PreviewDialog() {
-    CustomizedDialog("", "", onDismiss = { /*TODO*/ }, onConfirm = { /*TODO*/ })
+    CustomDialog("", "", onDismiss = { /*TODO*/ }, onConfirm = { /*TODO*/ })
 }

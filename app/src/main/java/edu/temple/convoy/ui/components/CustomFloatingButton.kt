@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CustomizedFloatingAddButton(
+fun CustomFloatingAddButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {

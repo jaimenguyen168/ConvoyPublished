@@ -47,4 +47,33 @@ interface ApiService {
         @Field("session_key") sessionKey: String,
         @Field("convoy_id") convoyId: String
     ): ConvoyApiResponse
+
+    @FormUrlEncoded
+    @POST("convoy.php")
+    suspend fun joinConvoy(
+        @Field("action") action: String,
+        @Field("username") username: String,
+        @Field("session_key") sessionKey: String,
+        @Field("convoy_id") convoyId: String
+    ): ConvoyApiResponse
+
+    @FormUrlEncoded
+    @POST("convoy.php")
+    suspend fun leaveConvoy(
+        @Field("action") action: String,
+        @Field("username") username: String,
+        @Field("session_key") sessionKey: String,
+        @Field("convoy_id") convoyId: String
+    ): ConvoyApiResponse
+
+    @FormUrlEncoded
+    @POST("convoy.php")
+    suspend fun updateMyLocation(
+        @Field("action") action: String,
+        @Field("username") username: String,
+        @Field("session_key") sessionKey: String,
+        @Field("convoy_id") convoyId: String,
+        @Field("latitude") latitude: String,
+        @Field("longitude") longitude: String
+    ): ConvoyApiResponse
 }

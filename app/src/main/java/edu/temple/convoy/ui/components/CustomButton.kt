@@ -24,7 +24,7 @@ import edu.temple.convoy.ui.theme.Pink80
 import edu.temple.convoy.ui.theme.Purple80
 
 @Composable
-fun CustomizedButton(
+fun CustomButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -62,5 +62,5 @@ fun CustomizedButton(
 @Preview(showBackground = true)
 @Composable
 fun PreviewButton() {
-    CustomizedButton("Sign Up", {})
+    CustomButton("Sign Up", {})
 }

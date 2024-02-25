@@ -1,16 +1,13 @@
 package edu.temple.convoy.main_convoy.location_data
 
+import android.content.Intent
 import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.temple.convoy.main_convoy.location_data.LocationData
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import edu.temple.convoy.login_flow.data.RetrofitClient
+import edu.temple.convoy.login_flow.screen.showToast
 import kotlinx.coroutines.launch
 
 class LocationViewModel : ViewModel() {
@@ -19,10 +16,5 @@ class LocationViewModel : ViewModel() {
 
     fun updateLocation(newLocation: LocationData) {
         _location.value = newLocation
-//        showLoc()
-    }
-
-    fun showLoc() {
-        Log.i("Current Loc", location.value.toString())
     }
 }
