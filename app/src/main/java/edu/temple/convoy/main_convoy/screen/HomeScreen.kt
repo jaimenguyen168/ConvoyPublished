@@ -2,6 +2,7 @@ package edu.temple.convoy.main_convoy.screen
 
 import android.Manifest
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +34,8 @@ import androidx.preference.PreferenceManager
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import edu.temple.convoy.R
 import edu.temple.convoy.login_flow.data.RetrofitClient
 import edu.temple.convoy.login_flow.screen.showToast
@@ -47,6 +51,7 @@ import edu.temple.convoy.ui.components.CustomOutlinedTextField
 import edu.temple.convoy.ui.components.CustomText
 import edu.temple.convoy.ui.components.GoogleMapView
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -71,8 +76,34 @@ fun HomeScreen(
 
     val sessionKey = sharedPreferences.getString("session_key", "") ?: ""
     val username = sharedPreferences.getString("username", "") ?: ""
+    val fcmToken = sharedPreferences.getString(Constant.FCM_TOKEN, "") ?: ""
 
     var convoyId by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        val newToken = Firebase.messaging.token.await()
+        (fcmToken != newToken).run {
+            val response = RetrofitClient.instance.updateFcmToken(
+                action = Constant.UPDATE,
+                username = username,
+                sessionKey = sessionKey,
+                fcmToken = Firebase.messaging.token.await()
+            )
+
+            if (response.status == "SUCCESS") {
+                Log.i("FCM Token saved", newToken)
+                with(sharedPreferences.edit()) {
+                    putString(Constant.FCM_TOKEN, newToken)
+                    apply()
+                }
+            } else {
+                showToast(
+                    context,
+                    "${response.message}"
+                )
+            }
+        }
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,

@@ -76,4 +76,13 @@ interface ApiService {
         @Field("latitude") latitude: String,
         @Field("longitude") longitude: String
     ): ConvoyApiResponse
+
+    @FormUrlEncoded
+    @POST("convoy.php")
+    suspend fun updateFcmToken(
+        @Field("action") action: String,
+        @Field("username") username: String,
+        @Field("session_key") sessionKey: String,
+        @Field("fcm_token") fcmToken: String
+    ): ConvoyApiResponse
 }
