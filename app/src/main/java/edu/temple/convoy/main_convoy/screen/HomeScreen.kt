@@ -35,6 +35,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
 import edu.temple.convoy.R
 import edu.temple.convoy.login_flow.data.RetrofitClient
@@ -79,6 +80,11 @@ fun HomeScreen(
     val fcmToken = sharedPreferences.getString(Constant.FCM_TOKEN, "") ?: ""
 
     var convoyId by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        FirebaseMessaging.getInstance()
+            .token.addOnSuccessListener { Log.d("Current token", it) }
+    }
 
     LaunchedEffect(Unit) {
         val newToken = Firebase.messaging.token.await()

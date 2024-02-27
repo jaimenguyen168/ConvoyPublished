@@ -78,7 +78,7 @@ interface ApiService {
     ): ConvoyApiResponse
 
     @FormUrlEncoded
-    @POST("convoy.php")
+    @POST("account.php")
     suspend fun updateFcmToken(
         @Field("action") action: String,
         @Field("username") username: String,

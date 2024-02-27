@@ -34,10 +34,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import edu.temple.convoy.R
+import edu.temple.convoy.main_convoy.fcm.FCMViewModel
 import edu.temple.convoy.ui.Constant
 import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomTopAppBar
 import edu.temple.convoy.ui.components.CustomDialog
+import edu.temple.convoy.ui.components.GoogleMapViewAll
 
 @Composable
 fun ConvoyScreen(
@@ -45,6 +47,7 @@ fun ConvoyScreen(
     backToHomeScreen: () -> Unit
 ) {
     val context = LocalContext.current
+    val fcmViewModel: FCMViewModel = viewModel()
 
     val coroutineScope = rememberCoroutineScope()
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -119,6 +122,7 @@ fun ConvoyScreen(
                     elevation = 5.dp
                 ) {
                     GoogleMapView(locationViewModel = locationViewModel)
+//                    GoogleMapViewAll(fcmViewModel = fcmViewModel)
                 }
 
                 Column(
