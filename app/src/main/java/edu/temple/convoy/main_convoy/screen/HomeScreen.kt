@@ -77,31 +77,31 @@ fun HomeScreen(
 
     val sessionKey = sharedPreferences.getString("session_key", "") ?: ""
     val username = sharedPreferences.getString("username", "") ?: ""
-    val fcmToken = sharedPreferences.getString(Constant.FCM_TOKEN, "") ?: ""
+    var hasToken by remember { mutableStateOf(false) }
 
     var convoyId by remember { mutableStateOf("") }
+    var newToken by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        FirebaseMessaging.getInstance()
-            .token.addOnSuccessListener { Log.d("Current token", it) }
+        newToken = Firebase.messaging.token.await()
+        FirebaseMessaging.getInstance().token
+            .addOnSuccessListener {
+                Log.d("Current token", it)
+                hasToken = newToken == it
+            }
     }
 
-    LaunchedEffect(Unit) {
-        val newToken = Firebase.messaging.token.await()
-        (fcmToken != newToken).run {
+    if (!hasToken) {
+        LaunchedEffect(Unit) {
             val response = RetrofitClient.instance.updateFcmToken(
                 action = Constant.UPDATE,
                 username = username,
                 sessionKey = sessionKey,
-                fcmToken = Firebase.messaging.token.await()
+                fcmToken = newToken
             )
 
             if (response.status == "SUCCESS") {
                 Log.i("FCM Token saved", newToken)
-                with(sharedPreferences.edit()) {
-                    putString(Constant.FCM_TOKEN, newToken)
-                    apply()
-                }
             } else {
                 showToast(
                     context,

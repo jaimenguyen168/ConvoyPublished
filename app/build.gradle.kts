@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.google.gms.google-services")
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -86,6 +87,9 @@ dependencies {
 
     // Extended Icons
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    // Serializable
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
