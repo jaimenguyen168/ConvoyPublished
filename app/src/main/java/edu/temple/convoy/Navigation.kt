@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import edu.temple.convoy.login_flow.data.LoginState
 import edu.temple.convoy.login_flow.screen.SignInScreen
 import edu.temple.convoy.login_flow.screen.SignUpScreen
+import edu.temple.convoy.main_convoy.fcm.FCMViewModel
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.main_convoy.screen.ConvoyScreen
 import edu.temple.convoy.main_convoy.screen.HomeScreen
@@ -16,6 +17,7 @@ import edu.temple.convoy.main_convoy.screen.HomeScreen
 fun Navigation(
     context: Context,
     locationViewModel: LocationViewModel,
+    fcmViewModel: FCMViewModel,
     navController: NavHostController,
     startDestination: String
 ) {
@@ -67,6 +69,7 @@ fun Navigation(
 
         composable(Screen.ConvoyScreen.route) {
             ConvoyScreen(
+                fcmViewModel = fcmViewModel,
                 locationViewModel = locationViewModel,
                 backToHomeScreen = {
                     navController.navigate(Screen.LandingScreen.route) {

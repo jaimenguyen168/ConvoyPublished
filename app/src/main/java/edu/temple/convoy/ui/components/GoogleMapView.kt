@@ -110,7 +110,8 @@ fun GoogleMapViewAll(
 
             Marker(
                 state = MarkerState(position = participantLocation.value),
-//                icon = BitmapDescriptor(D)
+                title = "My current location",
+                draggable = true
             )
 
 

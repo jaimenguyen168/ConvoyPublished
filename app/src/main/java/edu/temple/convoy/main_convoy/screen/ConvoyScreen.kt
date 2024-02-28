@@ -13,6 +13,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,11 +44,12 @@ import edu.temple.convoy.ui.components.GoogleMapViewAll
 
 @Composable
 fun ConvoyScreen(
+    fcmViewModel: FCMViewModel,
     locationViewModel: LocationViewModel,
     backToHomeScreen: () -> Unit
 ) {
     val context = LocalContext.current
-    val fcmViewModel: FCMViewModel = viewModel()
+//    val fcmViewModel: FCMViewModel = viewModel()
 
     val coroutineScope = rememberCoroutineScope()
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -89,6 +91,12 @@ fun ConvoyScreen(
         }
     }
 
+    val userLocation by fcmViewModel.convoyParticipantsData.observeAsState()
+
+    LaunchedEffect(userLocation) {
+        Log.i("Message through VM", userLocation.toString())
+    }
+
     Scaffold(
         topBar = {
             CustomTopAppBar(
@@ -121,8 +129,11 @@ fun ConvoyScreen(
                         .padding(16.dp),
                     elevation = 5.dp
                 ) {
-                    GoogleMapView(locationViewModel = locationViewModel)
-//                    GoogleMapViewAll(fcmViewModel = fcmViewModel)
+//                    GoogleMapView(locationViewModel = locationViewModel)
+                    GoogleMapViewAll(
+                        locationViewModel = locationViewModel,
+                        fcmViewModel = fcmViewModel
+                    )
                 }
 
                 Column(
@@ -203,12 +214,12 @@ fun ConvoyScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewConvoy() {
-    val locationViewModel: LocationViewModel = viewModel()
-    ConvoyScreen(
-        locationViewModel = locationViewModel,
-        {}
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewConvoy() {
+//    val locationViewModel: LocationViewModel = viewModel()
+//    ConvoyScreen(
+//        locationViewModel = locationViewModel,
+//        {}
+//    )
+//}
