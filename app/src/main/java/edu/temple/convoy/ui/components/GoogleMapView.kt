@@ -95,7 +95,7 @@ fun GoogleMapViewAll(
         position = CameraPosition.fromLatLngZoom(userLocation.value, 10f)
     }
 
-    val allLocationStates by fcmViewModel.convoyParticipantsData.observeAsState()
+    val allLocationStates by fcmViewModel.convoyParticipantsData.collectAsState()
 
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     val username = sharedPreferences.getString("username", "") ?: ""
@@ -112,12 +112,10 @@ fun GoogleMapViewAll(
         )
 
         allLocationStates?.forEach {
-
+            val participantLocation = remember {
+                mutableStateOf(LatLng(it.latitude, it.longitude))
+            }
             if (it.username != username) {
-                val participantLocation = remember {
-                    mutableStateOf(LatLng(it.latitude, it.longitude))
-                }
-
                 MapMarker(
                     context = context,
                     position = participantLocation.value,
@@ -126,6 +124,10 @@ fun GoogleMapViewAll(
                 )
             }
         }
+
+//        LaunchedEffect(allLocationStates) {
+//
+//        }
     }
 
     LaunchedEffect(userLocation.value) {
