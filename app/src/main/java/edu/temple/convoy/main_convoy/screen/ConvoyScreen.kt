@@ -49,7 +49,6 @@ fun ConvoyScreen(
     backToHomeScreen: () -> Unit
 ) {
     val context = LocalContext.current
-//    val fcmViewModel: FCMViewModel = viewModel()
 
     val coroutineScope = rememberCoroutineScope()
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -129,10 +128,10 @@ fun ConvoyScreen(
                         .padding(16.dp),
                     elevation = 5.dp
                 ) {
-//                    GoogleMapView(locationViewModel = locationViewModel)
                     GoogleMapViewAll(
                         locationViewModel = locationViewModel,
-                        fcmViewModel = fcmViewModel
+                        fcmViewModel = fcmViewModel,
+                        context = context
                     )
                 }
 
