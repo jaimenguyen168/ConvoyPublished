@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.preference.PreferenceManager
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -30,6 +31,7 @@ import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import edu.temple.convoy.R
+import edu.temple.convoy.main_convoy.fcm.ConvoyParticipant
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
 import edu.temple.convoy.main_convoy.location_data.LocationData
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
@@ -95,7 +97,21 @@ fun GoogleMapViewAll(
         position = CameraPosition.fromLatLngZoom(userLocation.value, 10f)
     }
 
-    val allLocationStates by fcmViewModel.convoyParticipantsData.collectAsState()
+    val convoyParticipantsData by fcmViewModel.convoyParticipantsData.observeAsState(initial = emptyList())
+    val participantLocations = remember { mutableStateOf<List<ConvoyParticipant>>(emptyList()) }
+
+    LaunchedEffect(convoyParticipantsData) {
+        val updatedParticipantLocations = convoyParticipantsData.map { participant ->
+            ConvoyParticipant(
+                username = participant.username,
+                firstname = participant.firstname,
+                lastname = participant.lastname,
+                latitude = participant.latitude,
+                longitude = participant.longitude
+            )
+        }
+        participantLocations.value = updatedParticipantLocations
+    }
 
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     val username = sharedPreferences.getString("username", "") ?: ""
@@ -111,23 +127,16 @@ fun GoogleMapViewAll(
             draggable = true
         )
 
-        allLocationStates?.forEach {
-            val participantLocation = remember {
-                mutableStateOf(LatLng(it.latitude, it.longitude))
-            }
+        participantLocations.value.forEach {
             if (it.username != username) {
                 MapMarker(
                     context = context,
-                    position = participantLocation.value,
+                    position = LatLng(it.latitude, it.longitude),
                     title = it.username,
                     iconResourceId = R.drawable.baseline_location_pin_24
                 )
             }
         }
-
-//        LaunchedEffect(allLocationStates) {
-//
-//        }
     }
 
     LaunchedEffect(userLocation.value) {

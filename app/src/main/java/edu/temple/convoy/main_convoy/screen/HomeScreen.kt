@@ -77,39 +77,31 @@ fun HomeScreen(
 
     val sessionKey = sharedPreferences.getString("session_key", "") ?: ""
     val username = sharedPreferences.getString("username", "") ?: ""
-    var hasToken by remember { mutableStateOf(false) }
 
     var convoyId by remember { mutableStateOf("") }
     var newToken by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
+
         newToken = Firebase.messaging.token.await()
-        FirebaseMessaging.getInstance().token
-            .addOnSuccessListener {
-                Log.d("Current token", it)
-                hasToken = newToken == it
-            }
-    }
 
-    if (!hasToken) {
-        LaunchedEffect(Unit) {
-            val response = RetrofitClient.instance.updateFcmToken(
-                action = Constant.UPDATE,
-                username = username,
-                sessionKey = sessionKey,
-                fcmToken = newToken
+        val response = RetrofitClient.instance.updateFcmToken(
+            action = Constant.UPDATE,
+            username = username,
+            sessionKey = sessionKey,
+            fcmToken = newToken
+        )
+
+        if (response.status == "SUCCESS") {
+            Log.i("FCM Token saved", newToken)
+        } else {
+            showToast(
+                context,
+                "${response.message}"
             )
-
-            if (response.status == "SUCCESS") {
-                Log.i("FCM Token saved", newToken)
-            } else {
-                showToast(
-                    context,
-                    "${response.message}"
-                )
-            }
         }
     }
+
 
     Scaffold(
         scaffoldState = scaffoldState,

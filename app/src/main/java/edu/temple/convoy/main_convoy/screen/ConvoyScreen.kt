@@ -90,11 +90,11 @@ fun ConvoyScreen(
         }
     }
 
-//    val userLocation by fcmViewModel.convoyParticipantsData.collectAsState()
-//
-//    LaunchedEffect(userLocation) {
-//        Log.i("Message through VM", userLocation.toString())
-//    }
+    val userLocation by fcmViewModel.convoyParticipantsData.observeAsState()
+
+    LaunchedEffect(userLocation) {
+        Log.i("Message through VM", userLocation.toString())
+    }
 
     Scaffold(
         topBar = {

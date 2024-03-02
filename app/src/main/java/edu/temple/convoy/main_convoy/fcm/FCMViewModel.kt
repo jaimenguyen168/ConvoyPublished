@@ -15,11 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FCMViewModel : ViewModel() {
-    private val _convoyParticipantsData = MutableStateFlow<List<ConvoyParticipant>>(emptyList())
-    val convoyParticipantsData = _convoyParticipantsData.asStateFlow()
-
-//    private val _convoyParticipantsData = MutableLiveData<List<ConvoyParticipant>>()
-//    val convoyParticipantsData : LiveData<List<ConvoyParticipant>> = _convoyParticipantsData
+    private val _convoyParticipantsData = MutableLiveData<List<ConvoyParticipant>>()
+    val convoyParticipantsData : LiveData<List<ConvoyParticipant>> = _convoyParticipantsData
 
     fun updateConvoyParticipantsData(convoyParticipants: List<ConvoyParticipant>) {
         viewModelScope.launch(Dispatchers.Main) {

@@ -11,10 +11,6 @@ import kotlinx.serialization.json.Json
 
 class FCMService : FirebaseMessagingService() {
 
-//    private val fcmViewModel: FCMViewModel by lazy {
-//        ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(FCMViewModel::class.java)
-//    }
-
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Log.d("FCM", token)
@@ -22,8 +18,6 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-
-        val handler = Handler(Looper.getMainLooper())
 
         message.data.get("payload")?.run {
             val messageReceived = Json.decodeFromString<MessageReceived>(this)
@@ -35,15 +29,6 @@ class FCMService : FirebaseMessagingService() {
                     messageReceived(it)
                 }
             }
-
-//            handler.post {
-//                messageReceived.data?.let { fcmViewModel.updateConvoyParticipantsData(it) }
-//            }
-//            messageReceived.data?.let { data ->
-//                handler.post {
-//                    fcmViewModel.updateConvoyParticipantsData(data)
-//                }
-//            }
         }
     }
 }
