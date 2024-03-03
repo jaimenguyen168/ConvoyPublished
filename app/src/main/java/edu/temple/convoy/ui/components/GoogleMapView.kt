@@ -4,22 +4,18 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.preference.PreferenceManager
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -27,13 +23,11 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import edu.temple.convoy.R
 import edu.temple.convoy.main_convoy.fcm.ConvoyParticipant
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
-import edu.temple.convoy.main_convoy.location_data.LocationData
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 
 
@@ -116,6 +110,8 @@ fun GoogleMapViewAll(
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     val username = sharedPreferences.getString("username", "") ?: ""
 
+    var zoom by remember { mutableFloatStateOf(10f) }
+
     GoogleMap(
         modifier = modifier
             .padding(8.dp),
@@ -139,8 +135,12 @@ fun GoogleMapViewAll(
         }
     }
 
-    LaunchedEffect(userLocation.value) {
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(userLocation.value, 10f)
+    LaunchedEffect(participantLocations.value) {
+        val maxDistance = calculateFarthestDistance(userLocation.value, participantLocations.value)
+        zoom = calculateZoomLevel(maxDistance)
+        Log.i("MaxDistance", maxDistance.toString())
+        Log.i("Zoom-level", zoom.toString())
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(userLocation.value, zoom)
     }
 }
 
@@ -167,7 +167,6 @@ fun bitmapDescriptorFromVector(
     vectorResId: Int
 ): BitmapDescriptor? {
 
-    // retrieve the actual drawable
     val drawable = ContextCompat.getDrawable(context, vectorResId) ?: return null
     drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
     val bm = Bitmap.createBitmap(
@@ -176,8 +175,40 @@ fun bitmapDescriptorFromVector(
         Bitmap.Config.ARGB_8888
     )
 
-    // draw it onto the bitmap
     val canvas = android.graphics.Canvas(bm)
     drawable.draw(canvas)
     return BitmapDescriptorFactory.fromBitmap(bm)
 }
+
+fun calculateZoomLevel(distanceInMiles: Double): Float {
+    return when {
+        distanceInMiles <= 5 -> 12f
+        distanceInMiles <= 10 -> 10f
+        distanceInMiles <= 50 -> 8f
+        distanceInMiles <= 100 -> 6f
+        distanceInMiles <= 500 -> 5f
+        else -> 3f
+    }
+}
+
+fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+    val R = 6371 // Radius of the Earth in kilometers
+    val latDistance = Math.toRadians(lat2 - lat1)
+    val lonDistance = Math.toRadians(lon2 - lon1)
+    val a = (Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+            + (Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+            * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2)))
+    val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return R * c * 0.621371
+}
+
+fun calculateFarthestDistance(myLocation: LatLng, participants: List<ConvoyParticipant>): Double {
+    val distances = mutableMapOf<Double, ConvoyParticipant>()
+
+    for (person in participants) {
+        val distance = haversine(myLocation.latitude, myLocation.longitude, person.latitude, person.longitude)
+        distances[distance] = person
+    }
+    return distances.keys.maxOrNull() ?: 5.0
+}
+
