@@ -98,9 +98,7 @@ fun ConvoyScreen(
 
     LaunchedEffect(convoyEndId) {
         convoyEndId?.let { endId ->
-            // Check if the received convoy ID matches the convoy ID of the convoy you're participating in
             if (endId == convoyId) {
-                // Leave the convoy immediately
                 coroutineScope.launch {
                     RetrofitClient.instance.leaveConvoy(
                         action = Constant.LEAVE,
@@ -110,6 +108,10 @@ fun ConvoyScreen(
                     )
                 }
                 backToHomeScreen()
+                showToast(
+                    context,
+                    "The owner has ended the convoy $convoyId"
+                )
             }
         }
     }

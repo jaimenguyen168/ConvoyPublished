@@ -2,6 +2,7 @@ package edu.temple.convoy.ui.components
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.padding
@@ -129,7 +130,6 @@ fun GoogleMapViewAll(
                     context = context,
                     position = LatLng(it.latitude, it.longitude),
                     title = it.username,
-                    iconResourceId = R.drawable.baseline_location_pin_24
                 )
             }
         }
@@ -149,10 +149,12 @@ fun MapMarker(
     context: Context,
     position: LatLng,
     title: String,
-    @DrawableRes iconResourceId: Int
 ) {
     val icon = bitmapDescriptorFromVector(
-        context, iconResourceId
+        context = context,
+        vectorResId = R.drawable.map_person,
+        width = 60,
+        height = 60
     )
 
     Marker(
@@ -164,30 +166,30 @@ fun MapMarker(
 
 fun bitmapDescriptorFromVector(
     context: Context,
-    vectorResId: Int
+    @DrawableRes vectorResId: Int,
+    width: Int,
+    height: Int
 ): BitmapDescriptor? {
-
-    val drawable = ContextCompat.getDrawable(context, vectorResId) ?: return null
-    drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-    val bm = Bitmap.createBitmap(
-        drawable.intrinsicWidth,
-        drawable.intrinsicHeight,
-        Bitmap.Config.ARGB_8888
-    )
-
-    val canvas = android.graphics.Canvas(bm)
-    drawable.draw(canvas)
-    return BitmapDescriptorFactory.fromBitmap(bm)
+    val vectorDrawable = ContextCompat.getDrawable(context, vectorResId) ?: return null
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
+    vectorDrawable.draw(canvas)
+    return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
 
 fun calculateZoomLevel(distanceInMiles: Double): Float {
     return when {
         distanceInMiles <= 5 -> 12f
-        distanceInMiles <= 10 -> 10f
+        distanceInMiles <= 10 -> 11f
+        distanceInMiles <= 20 -> 10f
         distanceInMiles <= 50 -> 8f
-        distanceInMiles <= 100 -> 6f
-        distanceInMiles <= 500 -> 5f
-        else -> 3f
+        distanceInMiles <= 100 -> 7f
+        distanceInMiles <= 200 -> 6f
+        distanceInMiles <= 300 -> 5f
+        distanceInMiles <= 500 -> 4f
+        distanceInMiles <= 1000 -> 3f
+        else -> 1f
     }
 }
 
