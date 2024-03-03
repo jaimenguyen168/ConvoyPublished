@@ -14,4 +14,17 @@
 
     <string name="have_account">Already have an account?</string>
     <string name="no_account">Don\'t have an account?</string>
+    <string name="leave_convoy">Leave Convoy</string>
+    <string name="leave_convoy_confirm_message">Please confirm if you want to leave this convoy.</string>
+    <string name="end_convoy">End Convoy</string>
+    <string name="end_convoy_confirm_message">Please confirm if you want to end this convoy.</string>
+    <string name="no_map_display_message">Map can\'t be displayed. Please grant permission in settings.</string>
+    <string name="ask_to_join_convoy">Join a Convoy by entering its ID</string>
+    <string name="enter">Enter</string>
+    <string name="convoy_id">Convoy_ID</string>
+    <string name="create_a_convoy">Create a Convoy</string>
+    <string name="create_convoy_confirm_message">Please click the button below to confirm to create a new Convoy</string>
+    <string name="join_convoy_confirm_message">Please confirm if you want to join this convoy.</string>
+    <string name="log_out">Log Out</string>
+    <string name="log_out_confirm_message">Please confirm if you want to log out.</string>
 </resources>

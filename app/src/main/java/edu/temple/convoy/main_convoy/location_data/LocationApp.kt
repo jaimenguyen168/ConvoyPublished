@@ -4,7 +4,6 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import edu.temple.convoy.main_convoy.fcm.ConvoyParticipant
 import edu.temple.convoy.main_convoy.fcm.MessageReceived
 
 class LocationApp : Application() {

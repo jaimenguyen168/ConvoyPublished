@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.preference.PreferenceManager
 import edu.temple.convoy.R
 import edu.temple.convoy.login_flow.data.RetrofitClient
+import edu.temple.convoy.Constant
 import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomClickableText
 import edu.temple.convoy.ui.components.CustomDivider
@@ -90,21 +91,21 @@ fun SignInScreen(
             onClick = {
                 coroutineScope.launch {
                     val response = RetrofitClient.instance.loginUser(
-                        action = "LOGIN",
+                        action = Constant.LOGIN,
                         username = username,
                         password = password
                     )
 
-                    if (response.status == "SUCCESS") {
+                    if (response.status == Constant.SUCCESS) {
                         response.sessionKey?.run {
                             with(sharedPreferences.edit()) {
-                                putString("session_key", this@run)
-                                putString("username", username)
+                                putString(Constant.SESSION_KEY, this@run)
+                                putString(Constant.USERNAME, username)
                                 apply()
                             }
                             showToast(
                                 context,
-                                "$this@run"
+                                "Signed in successfully"
                             )
                         }
                         onSignInSuccess()
