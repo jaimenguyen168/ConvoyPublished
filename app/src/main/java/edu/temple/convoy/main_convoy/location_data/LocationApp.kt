@@ -4,8 +4,8 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import edu.temple.convoy.main_convoy.fcm.ConvoyParticipant
+import edu.temple.convoy.main_convoy.fcm.MessageReceived
 
 class LocationApp : Application() {
     override fun onCreate() {
@@ -21,7 +21,7 @@ class LocationApp : Application() {
 
     private var messageCallback: FCMCallback? = null
     interface FCMCallback {
-        fun messageReceived(message: List<ConvoyParticipant>)
+        fun messageReceived(messageReceived: MessageReceived)
     }
 
     fun registerCallback (callback: FCMCallback?) {

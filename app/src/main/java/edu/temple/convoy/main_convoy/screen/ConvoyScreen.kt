@@ -1,6 +1,8 @@
 package edu.temple.convoy.main_convoy.screen
 
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,21 +15,17 @@ import androidx.compose.material.Card
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.preference.PreferenceManager
 import edu.temple.convoy.login_flow.data.RetrofitClient
 import edu.temple.convoy.login_flow.screen.showToast
 import edu.temple.convoy.main_convoy.location_data.LocationService
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
-import edu.temple.convoy.ui.components.GoogleMapView
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -36,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import edu.temple.convoy.R
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
+import edu.temple.convoy.main_convoy.fcm.MessageReceived
 import edu.temple.convoy.ui.Constant
 import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomTopAppBar
@@ -90,10 +89,29 @@ fun ConvoyScreen(
         }
     }
 
-    val userLocation by fcmViewModel.convoyParticipantsData.observeAsState()
+    val participantsLocation by fcmViewModel.convoyParticipantsData.observeAsState()
+    val convoyEndId by fcmViewModel.convoyId.observeAsState(initial = null)
 
-    LaunchedEffect(userLocation) {
-        Log.i("Message through VM", userLocation.toString())
+    LaunchedEffect(participantsLocation) {
+        Log.i("Message through VM", participantsLocation.toString())
+    }
+
+    LaunchedEffect(convoyEndId) {
+        convoyEndId?.let { endId ->
+            // Check if the received convoy ID matches the convoy ID of the convoy you're participating in
+            if (endId == convoyId) {
+                // Leave the convoy immediately
+                coroutineScope.launch {
+                    RetrofitClient.instance.leaveConvoy(
+                        action = Constant.LEAVE,
+                        username = username,
+                        sessionKey = sessionKey,
+                        convoyId = convoyId
+                    )
+                }
+                backToHomeScreen()
+            }
+        }
     }
 
     Scaffold(
@@ -212,13 +230,3 @@ fun ConvoyScreen(
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewConvoy() {
-//    val locationViewModel: LocationViewModel = viewModel()
-//    ConvoyScreen(
-//        locationViewModel = locationViewModel,
-//        {}
-//    )
-//}

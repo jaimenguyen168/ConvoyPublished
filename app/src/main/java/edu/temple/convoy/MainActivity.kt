@@ -18,8 +18,10 @@ import androidx.navigation.compose.rememberNavController
 import edu.temple.convoy.login_flow.data.LoginState
 import edu.temple.convoy.main_convoy.fcm.ConvoyParticipant
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
+import edu.temple.convoy.main_convoy.fcm.MessageReceived
 import edu.temple.convoy.main_convoy.location_data.LocationApp
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
+import edu.temple.convoy.ui.Constant
 import edu.temple.convoy.ui.theme.ConvoyLabTheme
 
 class MainActivity : ComponentActivity(), LocationApp.FCMCallback {
@@ -47,9 +49,23 @@ class MainActivity : ComponentActivity(), LocationApp.FCMCallback {
         }
     }
 
-    override fun messageReceived(message: List<ConvoyParticipant>) {
-        Handler(Looper.getMainLooper()).post {
-            fcmViewModel.updateConvoyParticipantsData(message)
+    override fun messageReceived(messageReceived: MessageReceived) {
+        when (messageReceived.action) {
+            Constant.UPDATE -> {
+                messageReceived.data?.let {
+                    Handler(Looper.getMainLooper()).post {
+                        fcmViewModel.updateConvoyParticipantsData(it)
+                    }
+                }
+            }
+            Constant.END -> {
+                messageReceived.convoy_id?.let {
+                    Handler(Looper.getMainLooper()).post {
+                        fcmViewModel.getConvoyId(it)
+                    }
+                }
+            }
+            else -> {}
         }
     }
 
