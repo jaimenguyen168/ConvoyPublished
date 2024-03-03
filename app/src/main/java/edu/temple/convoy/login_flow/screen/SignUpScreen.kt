@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.temple.convoy.R
 import edu.temple.convoy.login_flow.data.RetrofitClient
+import edu.temple.convoy.Constant
 import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomClickableText
 import edu.temple.convoy.ui.components.CustomDivider
@@ -107,14 +108,14 @@ fun SignUpScreen(
             onClick = {
                 coroutineScope.launch {
                     val response = RetrofitClient.instance.registerUser(
-                        action = "REGISTER",
+                        action = Constant.REGISTER,
                         username = username,
                         firstname = firstname,
                         lastname = lastname,
                         password = password
                     )
 
-                    if (response.status == "SUCCESS") {
+                    if (response.status == Constant.SUCCESS) {
                         showToast(
                             context,
                             "Sign up successfully."

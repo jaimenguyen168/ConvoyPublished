@@ -1,7 +1,6 @@
 package edu.temple.convoy
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,12 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import edu.temple.convoy.login_flow.data.LoginState
-import edu.temple.convoy.main_convoy.fcm.ConvoyParticipant
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
 import edu.temple.convoy.main_convoy.fcm.MessageReceived
 import edu.temple.convoy.main_convoy.location_data.LocationApp
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
-import edu.temple.convoy.ui.Constant
 import edu.temple.convoy.ui.theme.ConvoyLabTheme
 
 class MainActivity : ComponentActivity(), LocationApp.FCMCallback {
@@ -34,7 +31,6 @@ class MainActivity : ComponentActivity(), LocationApp.FCMCallback {
 
         setContent {
             ConvoyLabTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -84,7 +80,7 @@ fun MyApp(
     val locationViewModel: LocationViewModel = viewModel()
 
     val isLoggedIn = LoginState.isLoggedIn(context)
-    val startDestination = if (isLoggedIn) Screen.LandingScreen.route else Screen.SignInScreen.route
+    val startDestination = if (isLoggedIn) Screen.HomeScreen.route else Screen.SignInScreen.route
 
     Navigation(
         context = context,
@@ -94,13 +90,3 @@ fun MyApp(
         startDestination = startDestination
     )
 }
-
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    ConvoyLabTheme {
-//        MyApp(app)
-//    }
-//}

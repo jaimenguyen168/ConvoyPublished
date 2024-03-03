@@ -34,7 +34,7 @@ fun Navigation(
                 },
                 onSignInSuccess = {
                     LoginState.setLoginState(context, true)
-                    navController.navigate(Screen.LandingScreen.route)
+                    navController.navigate(Screen.HomeScreen.route)
                 }
             )
         }
@@ -49,19 +49,19 @@ fun Navigation(
             )
         }
 
-        composable(Screen.LandingScreen.route) {
+        composable(Screen.HomeScreen.route) {
             HomeScreen(
                 context = context,
                 locationViewModel = locationViewModel,
                 toConvoy = {
                     navController.navigate(Screen.ConvoyScreen.route) {
-                        popUpTo(Screen.LandingScreen.route) { inclusive = true }
+                        popUpTo(Screen.HomeScreen.route) { inclusive = true }
                     }
                 },
                 onSignOut = {
                     LoginState.setLoginState(context, false)
                     navController.navigate(Screen.SignInScreen.route) {
-                        popUpTo(Screen.LandingScreen.route) { inclusive = true }
+                        popUpTo(Screen.HomeScreen.route) { inclusive = true }
                     }
                 }
             )
@@ -72,7 +72,7 @@ fun Navigation(
                 fcmViewModel = fcmViewModel,
                 locationViewModel = locationViewModel,
                 backToHomeScreen = {
-                    navController.navigate(Screen.LandingScreen.route) {
+                    navController.navigate(Screen.HomeScreen.route) {
                         popUpTo(Screen.ConvoyScreen.route) { inclusive = true }
                     }
                 }

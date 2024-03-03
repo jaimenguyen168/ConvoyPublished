@@ -35,7 +35,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
 import edu.temple.convoy.R
 import edu.temple.convoy.login_flow.data.RetrofitClient
@@ -43,7 +42,7 @@ import edu.temple.convoy.login_flow.screen.showToast
 import edu.temple.convoy.main_convoy.location_data.LocationUtil
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.main_convoy.permission.RequestLocationPermission
-import edu.temple.convoy.ui.Constant
+import edu.temple.convoy.Constant
 import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomTopAppBar
 import edu.temple.convoy.ui.components.CustomDialog
@@ -75,8 +74,8 @@ fun HomeScreen(
     RequestLocationPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     val permissionState = rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
 
-    val sessionKey = sharedPreferences.getString("session_key", "") ?: ""
-    val username = sharedPreferences.getString("username", "") ?: ""
+    val sessionKey = sharedPreferences.getString(Constant.SESSION_KEY, "") ?: ""
+    val username = sharedPreferences.getString(Constant.USERNAME, "") ?: ""
 
     var convoyId by remember { mutableStateOf("") }
     var newToken by remember { mutableStateOf("") }
@@ -92,7 +91,7 @@ fun HomeScreen(
             fcmToken = newToken
         )
 
-        if (response.status == "SUCCESS") {
+        if (response.status == Constant.SUCCESS) {
             Log.i("FCM Token saved", newToken)
         } else {
             showToast(
@@ -140,7 +139,7 @@ fun HomeScreen(
                         GoogleMapView(locationViewModel = locationViewModel)
                     }
                     is PermissionStatus.Denied -> {
-                        Text("Map can't be displayed. Please grant permission in settings.")
+                        Text(stringResource(R.string.no_map_display_message))
                     }
                 }
             }
@@ -153,13 +152,13 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 CustomText(
-                    text = "Join a Convoy by entering its ID",
+                    text = stringResource(R.string.ask_to_join_convoy),
                     fontWeight = FontWeight.SemiBold
                 )
 
                 CustomOutlinedTextField(
                     value = convoyId,
-                    label = "Convoy_ID",
+                    label = stringResource(R.string.convoy_id),
                     icon = R.drawable.join,
                     onValueChange = { id ->
                         convoyId = id
@@ -169,7 +168,7 @@ fun HomeScreen(
 
                 CustomButton(
                     modifier = Modifier.padding(16.dp),
-                    text = "Enter",
+                    text = stringResource(R.string.enter),
                     onClick = {
                         showJoinConvoyDialog = true
                     }
@@ -179,8 +178,8 @@ fun HomeScreen(
 
         if (showCreateConvoyDialog) {
             CustomDialog(
-                title = "Create a Convoy",
-                content = "Please click the button below to confirm to create a new Convoy",
+                title = stringResource(R.string.create_a_convoy),
+                content = stringResource(R.string.create_convoy_confirm_message),
                 onDismiss = { showCreateConvoyDialog = false },
                 onConfirm = {
                     coroutineScope.launch {
@@ -191,16 +190,16 @@ fun HomeScreen(
                             sessionKey = sessionKey
                         )
 
-                        if (response.status == "SUCCESS") {
+                        if (response.status == Constant.SUCCESS) {
                             response.convoyId?.run {
                                 with(sharedPreferences.edit()) {
-                                    putString("convoy_id", this@run)
+                                    putString(Constant.CONVOY_ID, this@run)
                                     putString(Constant.ACTION, Constant.CREATE)
                                     apply()
                                 }
                                 showToast(
                                     context,
-                                    "$this@run"
+                                    "Created a Convoy successfully"
                                 )
                             }
                             toConvoy()
@@ -219,7 +218,7 @@ fun HomeScreen(
         if (showJoinConvoyDialog) {
             CustomDialog(
                 title = "Convoy @$convoyId",
-                content = "Please confirm if you want to join this convoy.",
+                content = stringResource(R.string.join_convoy_confirm_message),
                 onDismiss = { showJoinConvoyDialog = false },
                 onConfirm = {
                     coroutineScope.launch {
@@ -230,13 +229,13 @@ fun HomeScreen(
                             convoyId = convoyId
                         )
 
-                        if (response.status == "SUCCESS") {
+                        if (response.status == Constant.SUCCESS) {
                             with(sharedPreferences.edit()) {
                                 putString(Constant.ACTION, Constant.JOIN)
-                                putString("convoy_id", convoyId)
+                                putString(Constant.CONVOY_ID, convoyId)
                                 apply()
                             }
-                            showToast(context, "Join successfully")
+                            showToast(context, "Join a Convoy successfully")
                             toConvoy()
                         } else {
                             showToast(context, "${response.message}")
@@ -248,18 +247,18 @@ fun HomeScreen(
 
         if (showSignOutDialog) {
             CustomDialog(
-                title = "Log Out",
-                content = "Please confirm if you want to log out.",
+                title = stringResource(R.string.log_out),
+                content = stringResource(R.string.log_out_confirm_message),
                 onDismiss = { showSignOutDialog = false },
                 onConfirm = {
                     coroutineScope.launch {
                         val response = RetrofitClient.instance.logoutUser(
-                            action = "LOGOUT",
+                            action = Constant.LOGOUT,
                             username = username,
                             sessionKey = sessionKey
                         )
 
-                        if (response.status == "SUCCESS") {
+                        if (response.status == Constant.SUCCESS) {
                             showToast(context, "Log out successfully")
                             onSignOut()
                         } else {

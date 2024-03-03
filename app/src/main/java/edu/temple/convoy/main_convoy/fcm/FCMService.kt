@@ -4,7 +4,6 @@ import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import edu.temple.convoy.main_convoy.location_data.LocationApp
-import edu.temple.convoy.ui.Constant
 import kotlinx.serialization.json.Json
 
 class FCMService : FirebaseMessagingService() {

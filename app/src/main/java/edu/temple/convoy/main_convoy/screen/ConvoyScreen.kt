@@ -1,8 +1,6 @@
 package edu.temple.convoy.main_convoy.screen
 
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,10 +30,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import edu.temple.convoy.R
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
-import edu.temple.convoy.main_convoy.fcm.MessageReceived
-import edu.temple.convoy.ui.Constant
+import edu.temple.convoy.Constant
 import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomTopAppBar
 import edu.temple.convoy.ui.components.CustomDialog
@@ -52,9 +50,9 @@ fun ConvoyScreen(
     val coroutineScope = rememberCoroutineScope()
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-    val sessionKey = sharedPreferences.getString("session_key", "") ?: ""
-    val username = sharedPreferences.getString("username", "") ?: ""
-    val convoyId = sharedPreferences.getString("convoy_id", "") ?: ""
+    val sessionKey = sharedPreferences.getString(Constant.SESSION_KEY, "") ?: ""
+    val username = sharedPreferences.getString(Constant.USERNAME, "") ?: ""
+    val convoyId = sharedPreferences.getString(Constant.CONVOY_ID, "") ?: ""
     val userAction = sharedPreferences.getString(Constant.ACTION, "")
 
     var showEndConvoyDialog by remember { mutableStateOf(false) }
@@ -79,7 +77,7 @@ fun ConvoyScreen(
             longitude = location?.longitude.toString()
         )
 
-        if (response.status == "SUCCESS") {
+        if (response.status == Constant.SUCCESS) {
             Log.i("Location sent", "$location")
         } else {
             showToast(
@@ -98,9 +96,7 @@ fun ConvoyScreen(
 
     LaunchedEffect(convoyEndId) {
         convoyEndId?.let { endId ->
-            // Check if the received convoy ID matches the convoy ID of the convoy you're participating in
             if (endId == convoyId) {
-                // Leave the convoy immediately
                 coroutineScope.launch {
                     RetrofitClient.instance.leaveConvoy(
                         action = Constant.LEAVE,
@@ -110,6 +106,10 @@ fun ConvoyScreen(
                     )
                 }
                 backToHomeScreen()
+                showToast(
+                    context,
+                    "The owner has ended the convoy $convoyId"
+                )
             }
         }
     }
@@ -161,7 +161,8 @@ fun ConvoyScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     CustomButton(
-                        text = if (userAction == Constant.CREATE) "End Convoy" else "Leave Convoy",
+                        text = if (userAction == Constant.CREATE) stringResource(R.string.end_convoy)
+                            else stringResource(R.string.leave_convoy),
                         onClick = {
                             if (userAction == Constant.CREATE) showEndConvoyDialog = true
                             else showLeaveConvoyDialog = true
@@ -172,20 +173,20 @@ fun ConvoyScreen(
 
             if (showEndConvoyDialog) {
                 CustomDialog(
-                    title = "End Convoy",
-                    content = "Please confirm if you want to end this convoy.",
+                    title = stringResource(R.string.end_convoy),
+                    content = stringResource(R.string.end_convoy_confirm_message),
                     onDismiss = { showEndConvoyDialog = false },
                     onConfirm = {
                         coroutineScope.launch {
 
                             val response = RetrofitClient.instance.endConvoy(
-                                action = "END",
+                                action = Constant.END,
                                 username = username,
                                 sessionKey = sessionKey,
                                 convoyId = convoyId
                             )
 
-                            if (response.status == "SUCCESS") {
+                            if (response.status == Constant.SUCCESS) {
                                 Intent(context, LocationService::class.java).apply {
                                     action = LocationService.ACTION_STOP
                                     startForegroundService(context, this)
@@ -204,8 +205,8 @@ fun ConvoyScreen(
 
             if (showLeaveConvoyDialog) {
                 CustomDialog(
-                    title = "Leave Convoy",
-                    content = "Please confirm if you want to leave this convoy.",
+                    title = stringResource(R.string.leave_convoy),
+                    content = stringResource(R.string.leave_convoy_confirm_message),
                     onDismiss = { showLeaveConvoyDialog = false },
                     onConfirm = {
                         coroutineScope.launch {
@@ -215,7 +216,7 @@ fun ConvoyScreen(
                                 sessionKey = sessionKey,
                                 convoyId = convoyId
                             )
-                            if (response.status == "SUCCESS") {
+                            if (response.status == Constant.SUCCESS) {
                                 backToHomeScreen()
                             } else {
                                 showToast(
