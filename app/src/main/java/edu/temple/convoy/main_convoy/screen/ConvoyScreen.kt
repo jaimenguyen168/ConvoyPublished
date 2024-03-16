@@ -33,7 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import edu.temple.convoy.R
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
-import edu.temple.convoy.Constant
+import edu.temple.convoy.utils.Constant
 import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomTopAppBar
 import edu.temple.convoy.ui.components.CustomDialog

@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import edu.temple.convoy.R
 import edu.temple.convoy.login_flow.data.RetrofitClient
-import edu.temple.convoy.Constant
+import edu.temple.convoy.utils.Constant
 import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomClickableText
 import edu.temple.convoy.ui.components.CustomDivider

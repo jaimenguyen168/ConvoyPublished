@@ -42,7 +42,7 @@ import edu.temple.convoy.login_flow.screen.showToast
 import edu.temple.convoy.main_convoy.location_data.LocationUtil
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.main_convoy.permission.RequestLocationPermission
-import edu.temple.convoy.Constant
+import edu.temple.convoy.utils.Constant
 import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomTopAppBar
 import edu.temple.convoy.ui.components.CustomDialog

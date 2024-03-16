@@ -1,4 +1,4 @@
-package edu.temple.convoy.main_convoy.location_data
+package edu.temple.convoy.main_convoy.convoy_data
 
 data class ConvoyData(
     val id: String,

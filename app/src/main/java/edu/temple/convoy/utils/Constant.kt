@@ -1,4 +1,4 @@
-package edu.temple.convoy
+package edu.temple.convoy.utils
 
 object Constant {
     const val ACTION = "action"

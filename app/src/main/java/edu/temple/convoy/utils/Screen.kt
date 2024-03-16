@@ -1,4 +1,4 @@
-package edu.temple.convoy
+package edu.temple.convoy.utils
 
 sealed class Screen(val route: String) {
     data object SignInScreen: Screen("sign_in_screen")
