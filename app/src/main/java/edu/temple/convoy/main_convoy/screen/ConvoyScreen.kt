@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import edu.temple.convoy.R
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
+import edu.temple.convoy.main_convoy.location_data.LocationUtil
 import edu.temple.convoy.utils.Constant
 import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomTopAppBar
@@ -46,6 +47,7 @@ fun ConvoyScreen(
     backToHomeScreen: () -> Unit
 ) {
     val context = LocalContext.current
+    val locationUtil = LocationUtil(context = context)
 
     val coroutineScope = rememberCoroutineScope()
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -146,6 +148,7 @@ fun ConvoyScreen(
                         .padding(16.dp),
                     elevation = 5.dp
                 ) {
+                    locationUtil.getLocationUpdates(locationViewModel)
                     GoogleMapViewAll(
                         locationViewModel = locationViewModel,
                         fcmViewModel = fcmViewModel,

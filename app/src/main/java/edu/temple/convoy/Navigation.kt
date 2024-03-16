@@ -12,6 +12,7 @@ import edu.temple.convoy.main_convoy.fcm.FCMViewModel
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.main_convoy.screen.ConvoyScreen
 import edu.temple.convoy.main_convoy.screen.HomeScreen
+import edu.temple.convoy.utils.LastScreen
 import edu.temple.convoy.utils.Screen
 
 @Composable
@@ -20,21 +21,21 @@ fun Navigation(
     locationViewModel: LocationViewModel,
     fcmViewModel: FCMViewModel,
     navController: NavHostController,
-    startDestination: String
 ) {
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = LastScreen.lastScreen
     ) {
         composable(Screen.SignInScreen.route) {
             SignInScreen(
                 goToSignUpClick = {
+                    LastScreen.lastScreen = Screen.SignUpScreen.route
                     navController.navigate(Screen.SignUpScreen.route) {
                         popUpTo(Screen.SignInScreen.route) { inclusive = true }
                     }
                 },
                 onSignInSuccess = {
-                    LoginState.setLoginState(context, true)
+                    LastScreen.lastScreen = Screen.HomeScreen.route
                     navController.navigate(Screen.HomeScreen.route)
                 }
             )
@@ -43,6 +44,7 @@ fun Navigation(
         composable(Screen.SignUpScreen.route) {
             SignUpScreen(
                 goToSignInClick = {
+                    LastScreen.lastScreen = Screen.SignInScreen.route
                     navController.navigate(Screen.SignInScreen.route) {
                         popUpTo(Screen.SignUpScreen.route) { inclusive = true }
                     }
@@ -55,12 +57,13 @@ fun Navigation(
                 context = context,
                 locationViewModel = locationViewModel,
                 toConvoy = {
+                    LastScreen.lastScreen = Screen.ConvoyScreen.route
                     navController.navigate(Screen.ConvoyScreen.route) {
                         popUpTo(Screen.HomeScreen.route) { inclusive = true }
                     }
                 },
                 onSignOut = {
-                    LoginState.setLoginState(context, false)
+                    LastScreen.lastScreen = Screen.SignInScreen.route
                     navController.navigate(Screen.SignInScreen.route) {
                         popUpTo(Screen.HomeScreen.route) { inclusive = true }
                     }
@@ -73,6 +76,7 @@ fun Navigation(
                 fcmViewModel = fcmViewModel,
                 locationViewModel = locationViewModel,
                 backToHomeScreen = {
+                    LastScreen.lastScreen = Screen.HomeScreen.route
                     navController.navigate(Screen.HomeScreen.route) {
                         popUpTo(Screen.ConvoyScreen.route) { inclusive = true }
                     }

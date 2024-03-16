@@ -21,6 +21,7 @@ import edu.temple.convoy.main_convoy.location_data.LocationApp
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.ui.theme.ConvoyLabTheme
 import edu.temple.convoy.utils.Constant
+import edu.temple.convoy.utils.LastScreen
 import edu.temple.convoy.utils.Screen
 
 class MainActivity : ComponentActivity(), LocationApp.FCMCallback {
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity(), LocationApp.FCMCallback {
         super.onCreate(savedInstanceState)
 
         (application as LocationApp).registerCallback(this)
+        LastScreen.init(this)
 
         setContent {
             ConvoyLabTheme {
@@ -81,14 +83,10 @@ fun MyApp(
     val navController = rememberNavController()
     val locationViewModel: LocationViewModel = viewModel()
 
-    val isLoggedIn = LoginState.isLoggedIn(context)
-    val startDestination = if (isLoggedIn) Screen.HomeScreen.route else Screen.SignInScreen.route
-
     Navigation(
         context = context,
         locationViewModel = locationViewModel,
         fcmViewModel = fcmViewModel,
         navController = navController,
-        startDestination = startDestination
     )
 }
