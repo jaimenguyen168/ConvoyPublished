@@ -4,6 +4,8 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,6 +50,7 @@ import edu.temple.convoy.R
 import edu.temple.convoy.main_convoy.audio.ConvoyAudioPlayer
 import edu.temple.convoy.main_convoy.audio.ConvoyAudioRecorder
 import edu.temple.convoy.main_convoy.audio.component.RecordingView
+import edu.temple.convoy.main_convoy.audio.component.SendAudio
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
 import edu.temple.convoy.main_convoy.location_data.LocationUtil
 import edu.temple.convoy.utils.Constant
@@ -56,8 +59,13 @@ import edu.temple.convoy.ui.components.CustomTopAppBar
 import edu.temple.convoy.ui.components.CustomDialog
 import edu.temple.convoy.ui.components.CustomFloatingAddButton
 import edu.temple.convoy.ui.components.GoogleMapViewAll
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.io.File
-import java.security.Permission
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -289,7 +297,72 @@ fun ConvoyScreen(
                             showRecorder = false
                         },
                         onSend = {
+                            val handler = Handler(Looper.getMainLooper())
 
+                            CoroutineScope(Dispatchers.Main).launch {
+                                file?.let { audioFile ->
+                                    SendAudio.sendVoiceMessage(
+                                        username = username,
+                                        sessionKey = sessionKey,
+                                        convoyId = convoyId,
+                                        audioFile = audioFile
+                                    ) { success, errorMessage, convoyId ->
+                                        if (success) {
+                                            // Message sent successfully
+                                            showRecorder = false
+                                            Log.d("VoiceMessage", "Message sent successfully for convoy ID: $convoyId")
+                                            handler.post {
+                                                showToast(
+                                                    context,
+                                                    "Message sent successfully for convoy ID: $convoyId"
+                                                )
+                                            }
+                                        } else {
+                                            // Error occurred
+                                            Log.e("VoiceMessage", "Error: $errorMessage")
+                                        }
+                                    }
+//                                    try {
+//                                        val sentFile = MultipartBody.Part.createFormData(
+//                                            "message_file",
+//                                            audioFile.name,
+//                                            RequestBody.create("audio/*".toMediaTypeOrNull(), audioFile)
+//                                        )
+//                                        // Create the request body for the audio file
+////                                        val audioFileRequestBody = audioFile.asRequestBody("audio/*".toMediaTypeOrNull())
+////
+////                                        // Create the multipart part with the audio file
+////                                        val messageFilePart = MultipartBody.Part.createFormData("message_file", audioFile.name, audioFileRequestBody)
+//
+//                                        // Make the API call
+//                                        val response = RetrofitClient.instance.sendAudioMessage(
+//                                            action = Constant.MESSAGE,
+//                                            username = username,
+//                                            sessionKey = sessionKey,
+//                                            convoyId = convoyId,
+//                                            messageFile = sentFile
+//                                        )
+//
+//                                        // Check the response status
+//                                        if (response.status == Constant.SUCCESS) {
+//                                            showRecorder = false
+//                                        } else {
+//                                            Log.d("Fail Message", "${response.message}")
+//                                            showToast(
+//                                                context,
+//                                                "${response.message}"
+//                                            )
+//                                        }
+//                                    } catch (e: Exception) {
+//                                        // Handle any exceptions that may occur
+//                                        Log.e("Send Audio Message", "Error: ${e.message}", e)
+//                                        showToast(
+//                                            context,
+//                                            "Error sending audio message"
+//                                        )
+//                                    }
+                                }
+                            }
                         }
                     )
                 }

@@ -96,8 +96,6 @@ fun RecordingView(
 @Composable
 fun RecordingDialogPreview() {
     RecordingView(
-//        outputFile = File(""),
         onRecord = { /*TODO*/ }, onStop = { /*TODO*/ }, onCancel = { /*TODO*/ }) {
-
     }
 }

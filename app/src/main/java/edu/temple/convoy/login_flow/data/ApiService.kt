@@ -1,8 +1,12 @@
 package edu.temple.convoy.login_flow.data
 
+import okhttp3.MultipartBody
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
+import java.io.File
 
 interface ApiService {
     @FormUrlEncoded
@@ -84,5 +88,15 @@ interface ApiService {
         @Field("username") username: String,
         @Field("session_key") sessionKey: String,
         @Field("fcm_token") fcmToken: String
+    ): ConvoyApiResponse
+
+    @Multipart
+    @POST("convoy.php")
+    suspend fun sendAudioMessage(
+        @Part("action") action: String,
+        @Part("username") username: String,
+        @Part("session_key") sessionKey: String,
+        @Part("convoy_id") convoyId: String,
+        @Part messageFile: MultipartBody.Part
     ): ConvoyApiResponse
 }

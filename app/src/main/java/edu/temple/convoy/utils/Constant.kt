@@ -16,5 +16,7 @@ object Constant {
     const val USERNAME = "username"
     const val CONVOY_ID = "convoy_id"
 
+    const val MESSAGE = "MESSAGE"
+
     const val FCM_TOKEN = "fcm_token"
 }
