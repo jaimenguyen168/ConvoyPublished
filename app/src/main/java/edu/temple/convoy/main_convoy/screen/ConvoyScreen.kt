@@ -1,7 +1,12 @@
 package edu.temple.convoy.main_convoy.screen
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +39,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.checkSelfPermission
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import edu.temple.convoy.R
 import edu.temple.convoy.main_convoy.audio.ConvoyAudioPlayer
 import edu.temple.convoy.main_convoy.audio.ConvoyAudioRecorder
@@ -47,8 +57,9 @@ import edu.temple.convoy.ui.components.CustomDialog
 import edu.temple.convoy.ui.components.CustomFloatingAddButton
 import edu.temple.convoy.ui.components.GoogleMapViewAll
 import java.io.File
+import java.security.Permission
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun ConvoyScreen(
     fcmViewModel: FCMViewModel,
@@ -75,6 +86,7 @@ fun ConvoyScreen(
     val sheetState = rememberModalBottomSheetState()
 
     var file: File? by remember { mutableStateOf(null) }
+    val audioPermissionState = rememberPermissionState(permission = Manifest.permission.RECORD_AUDIO)
 
     LaunchedEffect(Unit) {
         Intent(context, LocationService::class.java).apply {
@@ -259,18 +271,22 @@ fun ConvoyScreen(
                     sheetState = sheetState
                 ) {
                     RecordingView(
-                        outputFile = file,
                         onRecord = {
-                            file = File(context.cacheDir, "audio.mp4")
-                            file?.let {
-                                recorder.startRecording(it)
+                            if (!audioPermissionState.status.isGranted) {
+                                audioPermissionState.launchPermissionRequest()
+                            } else {
+                                file = File(context.cacheDir, "audio.mp4")
+                                file?.let {
+                                    recorder.startRecording(it)
+                                }
                             }
                         },
                         onStop = {
                             recorder.stopRecording()
                                  },
-                        onSave = {
-
+                        onCancel = {
+                            recorder.stopRecording()
+                            showRecorder = false
                         },
                         onSend = {
 
@@ -281,3 +297,5 @@ fun ConvoyScreen(
         }
     }
 }
+
+
