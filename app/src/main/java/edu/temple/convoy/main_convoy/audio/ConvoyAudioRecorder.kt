@@ -2,11 +2,13 @@ package edu.temple.convoy.main_convoy.audio
 
 import android.content.Context
 import android.media.MediaRecorder
+import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 
 class ConvoyAudioRecorder(
-    private val  context: Context
+    private val context: Context
 ): AudioRecorder {
 
     private var recorder: MediaRecorder? = null
@@ -19,10 +21,13 @@ class ConvoyAudioRecorder(
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
             setOutputFile(FileOutputStream(outputFile).fd)
 
-            prepare()
-            start()
-
-            recorder = this
+            try {
+                prepare()
+                start()
+                recorder = this
+            } catch (e: IOException) {
+                Log.e("TAG", "prepare() failed")
+            }
         }
     }
 

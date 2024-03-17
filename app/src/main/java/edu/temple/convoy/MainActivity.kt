@@ -23,10 +23,12 @@ import edu.temple.convoy.ui.theme.ConvoyLabTheme
 import edu.temple.convoy.utils.Constant
 import edu.temple.convoy.utils.LastScreen
 import edu.temple.convoy.utils.Screen
+import java.io.File
 
 class MainActivity : ComponentActivity(), LocationApp.FCMCallback {
 
     private val fcmViewModel: FCMViewModel = FCMViewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,7 +44,7 @@ class MainActivity : ComponentActivity(), LocationApp.FCMCallback {
                     val context = applicationContext
                     MyApp(
                         context,
-                        fcmViewModel
+                        fcmViewModel,
                     )
                 }
             }
@@ -78,7 +80,7 @@ class MainActivity : ComponentActivity(), LocationApp.FCMCallback {
 @Composable
 fun MyApp(
     context: Context,
-    fcmViewModel: FCMViewModel
+    fcmViewModel: FCMViewModel,
 ) {
     val navController = rememberNavController()
     val locationViewModel: LocationViewModel = viewModel()

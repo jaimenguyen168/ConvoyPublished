@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Card
 import androidx.compose.material.Scaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -32,22 +35,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import edu.temple.convoy.R
+import edu.temple.convoy.main_convoy.audio.ConvoyAudioPlayer
+import edu.temple.convoy.main_convoy.audio.ConvoyAudioRecorder
+import edu.temple.convoy.main_convoy.audio.component.RecordingView
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
 import edu.temple.convoy.main_convoy.location_data.LocationUtil
 import edu.temple.convoy.utils.Constant
 import edu.temple.convoy.ui.components.CustomButton
 import edu.temple.convoy.ui.components.CustomTopAppBar
 import edu.temple.convoy.ui.components.CustomDialog
+import edu.temple.convoy.ui.components.CustomFloatingAddButton
 import edu.temple.convoy.ui.components.GoogleMapViewAll
+import java.io.File
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConvoyScreen(
     fcmViewModel: FCMViewModel,
     locationViewModel: LocationViewModel,
-    backToHomeScreen: () -> Unit
+    backToHomeScreen: () -> Unit,
 ) {
     val context = LocalContext.current
     val locationUtil = LocationUtil(context = context)
+    val recorder = ConvoyAudioRecorder(context)
+    val player = ConvoyAudioPlayer(context)
 
     val coroutineScope = rememberCoroutineScope()
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -59,6 +70,11 @@ fun ConvoyScreen(
 
     var showEndConvoyDialog by remember { mutableStateOf(false) }
     var showLeaveConvoyDialog by remember { mutableStateOf(false) }
+    var showRecorder by remember { mutableStateOf(false) }
+
+    val sheetState = rememberModalBottomSheetState()
+
+    var file: File? by remember { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
         Intent(context, LocationService::class.java).apply {
@@ -125,6 +141,11 @@ fun ConvoyScreen(
                 onActionClick = {},
                 onNavClick = {}
             )
+        },
+        floatingActionButton = {
+            CustomFloatingAddButton {
+                showRecorder = true
+            }
         }
     ) {
         Column(
@@ -230,6 +251,32 @@ fun ConvoyScreen(
                         }
                     }
                 )
+            }
+
+            if (showRecorder) {
+                ModalBottomSheet(
+                    onDismissRequest = {},
+                    sheetState = sheetState
+                ) {
+                    RecordingView(
+                        outputFile = file,
+                        onRecord = {
+                            file = File(context.cacheDir, "audio.mp4")
+                            file?.let {
+                                recorder.startRecording(it)
+                            }
+                        },
+                        onStop = {
+                            recorder.stopRecording()
+                                 },
+                        onSave = {
+
+                        },
+                        onSend = {
+
+                        }
+                    )
+                }
             }
         }
     }
