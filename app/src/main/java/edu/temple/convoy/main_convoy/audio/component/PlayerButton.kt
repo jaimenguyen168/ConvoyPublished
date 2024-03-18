@@ -1,8 +1,11 @@
 package edu.temple.convoy.main_convoy.audio.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,12 +24,11 @@ fun PlayerButton(
 ) {
     var isPlaying by remember { mutableStateOf(false) }
 
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+    Box(
+        modifier = modifier.wrapContentSize(),
     ) {
         CustomRoundButton(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.wrapContentSize(),
             icon = if (isPlaying) {
                 R.drawable.baseline_pause_24
             } else {

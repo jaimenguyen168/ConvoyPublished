@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import edu.temple.convoy.login_flow.data.LoginState
 import edu.temple.convoy.login_flow.screen.SignInScreen
 import edu.temple.convoy.login_flow.screen.SignUpScreen
+import edu.temple.convoy.main_convoy.audio.component.AudioPlayerViewModel
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
 import edu.temple.convoy.main_convoy.location_data.LocationViewModel
 import edu.temple.convoy.main_convoy.screen.ConvoyScreen
@@ -22,6 +23,7 @@ fun Navigation(
     locationViewModel: LocationViewModel,
     fcmViewModel: FCMViewModel,
     navController: NavHostController,
+    audioPlayerViewModel: AudioPlayerViewModel
 ) {
     NavHost(
         navController = navController,
@@ -76,6 +78,7 @@ fun Navigation(
             ConvoyScreen(
                 fcmViewModel = fcmViewModel,
                 locationViewModel = locationViewModel,
+                audioPlayerViewModel = audioPlayerViewModel,
                 backToHomeScreen = {
                     LastScreen.lastScreen = Screen.HomeScreen.route
                     navController.navigate(Screen.HomeScreen.route) {

@@ -1,8 +1,8 @@
 package edu.temple.convoy.main_convoy.audio
 
-import java.io.File
+import android.net.Uri
 
 interface AudioPlayer {
-    fun playAudio(inputFile: File)
+    fun playAudio(fileUri: Uri)
     fun stopAudio()
 }

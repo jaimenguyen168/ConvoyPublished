@@ -1,4 +1,4 @@
-package edu.temple.convoy.main_convoy.audio.component
+package edu.temple.convoy.main_convoy.audio
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

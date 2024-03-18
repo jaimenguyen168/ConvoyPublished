@@ -1,14 +1,10 @@
 package edu.temple.convoy.main_convoy.screen
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Card
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +20,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,8 +39,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.checkSelfPermission
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -50,7 +46,9 @@ import edu.temple.convoy.R
 import edu.temple.convoy.main_convoy.audio.ConvoyAudioPlayer
 import edu.temple.convoy.main_convoy.audio.ConvoyAudioRecorder
 import edu.temple.convoy.main_convoy.audio.component.RecordingView
-import edu.temple.convoy.main_convoy.audio.component.SendAudio
+import edu.temple.convoy.main_convoy.audio.SendAudio
+import edu.temple.convoy.main_convoy.audio.component.AudioMessageItem
+import edu.temple.convoy.main_convoy.audio.component.AudioPlayerViewModel
 import edu.temple.convoy.main_convoy.fcm.FCMViewModel
 import edu.temple.convoy.main_convoy.location_data.LocationUtil
 import edu.temple.convoy.utils.Constant
@@ -62,16 +60,13 @@ import edu.temple.convoy.ui.components.GoogleMapViewAll
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.io.File
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun ConvoyScreen(
     fcmViewModel: FCMViewModel,
     locationViewModel: LocationViewModel,
+    audioPlayerViewModel: AudioPlayerViewModel,
     backToHomeScreen: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -90,6 +85,7 @@ fun ConvoyScreen(
     var showEndConvoyDialog by remember { mutableStateOf(false) }
     var showLeaveConvoyDialog by remember { mutableStateOf(false) }
     var showRecorder by remember { mutableStateOf(false) }
+    val audioMessages by audioPlayerViewModel.audioMessages.collectAsState()
 
     val sheetState = rememberModalBottomSheetState()
 
@@ -213,6 +209,22 @@ fun ConvoyScreen(
                         }
                     )
                 }
+
+                if (audioMessages.isNotEmpty()) {
+                    LazyColumn {
+                        items(audioMessages.size) {i ->
+                            AudioMessageItem(
+                                audioMessage = audioMessages[i],
+                                onPlay = {
+                                         player.playAudio(audioMessages[i].fileUri)
+                                         },
+                                onStop = {
+                                    player.stopAudio()
+                                }
+                            )
+                        }
+                    }
+                }
             }
 
             if (showEndConvoyDialog) {
@@ -322,45 +334,6 @@ fun ConvoyScreen(
                                             Log.e("VoiceMessage", "Error: $errorMessage")
                                         }
                                     }
-//                                    try {
-//                                        val sentFile = MultipartBody.Part.createFormData(
-//                                            "message_file",
-//                                            audioFile.name,
-//                                            RequestBody.create("audio/*".toMediaTypeOrNull(), audioFile)
-//                                        )
-//                                        // Create the request body for the audio file
-////                                        val audioFileRequestBody = audioFile.asRequestBody("audio/*".toMediaTypeOrNull())
-////
-////                                        // Create the multipart part with the audio file
-////                                        val messageFilePart = MultipartBody.Part.createFormData("message_file", audioFile.name, audioFileRequestBody)
-//
-//                                        // Make the API call
-//                                        val response = RetrofitClient.instance.sendAudioMessage(
-//                                            action = Constant.MESSAGE,
-//                                            username = username,
-//                                            sessionKey = sessionKey,
-//                                            convoyId = convoyId,
-//                                            messageFile = sentFile
-//                                        )
-//
-//                                        // Check the response status
-//                                        if (response.status == Constant.SUCCESS) {
-//                                            showRecorder = false
-//                                        } else {
-//                                            Log.d("Fail Message", "${response.message}")
-//                                            showToast(
-//                                                context,
-//                                                "${response.message}"
-//                                            )
-//                                        }
-//                                    } catch (e: Exception) {
-//                                        // Handle any exceptions that may occur
-//                                        Log.e("Send Audio Message", "Error: ${e.message}", e)
-//                                        showToast(
-//                                            context,
-//                                            "Error sending audio message"
-//                                        )
-//                                    }
                                 }
                             }
                         }
