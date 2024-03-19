@@ -72,7 +72,7 @@ fun ConvoyScreen(
     val context = LocalContext.current
     val locationUtil = LocationUtil(context = context)
     val recorder = ConvoyAudioRecorder(context)
-    val player = ConvoyAudioPlayer(context)
+    val player = ConvoyAudioPlayer(context, audioPlayerViewModel)
 
     val coroutineScope = rememberCoroutineScope()
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -211,16 +211,21 @@ fun ConvoyScreen(
                 }
 
                 if (audioMessages.isNotEmpty()) {
+                    val filteredMessages = audioMessages.filter { message-> message.username != username }
+                    val reversedMessages = filteredMessages.reversed()
+
                     LazyColumn {
-                        items(audioMessages.size) {i ->
+                        items(reversedMessages.size) {i ->
+                            val message = reversedMessages[i]
                             AudioMessageItem(
-                                audioMessage = audioMessages[i],
+                                username = message.username,
                                 onPlay = {
-                                         player.playAudio(audioMessages[i].fileUri)
+                                    player.playAudio(message.fileUri)
                                          },
                                 onStop = {
                                     player.stopAudio()
-                                }
+                                },
+                                viewModel = audioPlayerViewModel
                             )
                         }
                     }
@@ -247,6 +252,7 @@ fun ConvoyScreen(
                                     action = LocationService.ACTION_STOP
                                     startForegroundService(context, this)
                                 }
+                                audioPlayerViewModel.clearAudioMessages()
                                 backToHomeScreen()
                             } else {
                                 showToast(
@@ -273,6 +279,7 @@ fun ConvoyScreen(
                                 convoyId = convoyId
                             )
                             if (response.status == Constant.SUCCESS) {
+                                audioPlayerViewModel.clearAudioMessages()
                                 backToHomeScreen()
                             } else {
                                 showToast(

@@ -11,35 +11,6 @@ data class ConvoyParticipant(
     val longitude: Double
 )
 
-// Define base sealed class for different types of messages
-//@Serializable
-//sealed class MessageReceived {
-//    abstract val action: String
-//}
-//
-//// Define data classes for different message types
-//@Serializable
-//@SerialName("UPDATE")
-//data class UpdateMessage(
-//    override val action: String,
-//    val data: List<ConvoyParticipant>
-//) : MessageReceived()
-//
-//@Serializable
-//@SerialName("END")
-//data class EndMessage(
-//    override val action: String,
-//    val convoy_id: String
-//) : MessageReceived()
-//
-//@Serializable
-//@SerialName("MESSAGE")
-//data class AudioMessage(
-//    override val action: String,
-//    val username: String,
-//    val message_url: String
-//) : MessageReceived()
-
 @Serializable
 data class MessageReceived(
     val action: String,

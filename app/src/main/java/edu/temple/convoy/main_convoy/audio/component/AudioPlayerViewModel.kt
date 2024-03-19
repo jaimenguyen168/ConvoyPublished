@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedInputStream
@@ -25,6 +26,23 @@ class AudioPlayerViewModel: ViewModel() {
 
     private val _audioMessages = MutableStateFlow<List<AudioMessage>>(emptyList())
     val audioMessages: StateFlow<List<AudioMessage>> = _audioMessages
+
+    private val _isPlaying = MutableStateFlow(false)
+    val isPlaying = _isPlaying.asStateFlow()
+
+    fun clearAudioMessages() {
+        _audioMessages.value = emptyList()
+    }
+
+    fun nowPlaying() {
+        _isPlaying.value = true
+        Log.d("AudioMessage in ViewModel", "Audio message in VM is playing. Value ${_isPlaying.value}")
+    }
+
+    fun nowStop() {
+        _isPlaying.value = false
+        Log.d("AudioMessage in ViewModel", "Audio message in VM has stopped. Value ${_isPlaying.value}")
+    }
 
     suspend fun downloadAndAddMessage(context: Context, username: String, messageUrl: String) {
         viewModelScope.launch {
