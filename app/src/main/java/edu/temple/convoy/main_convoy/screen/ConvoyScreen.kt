@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -210,23 +211,29 @@ fun ConvoyScreen(
                     )
                 }
 
+                //                    val filteredMessages = audioMessages.filter { message-> message.username != username }
+//                    val reversedMessages = filteredMessages.reversed()
                 if (audioMessages.isNotEmpty()) {
-                    val filteredMessages = audioMessages.filter { message-> message.username != username }
-                    val reversedMessages = filteredMessages.reversed()
+                    val reversedMessages = audioMessages
 
                     LazyColumn {
                         items(reversedMessages.size) {i ->
                             val message = reversedMessages[i]
-                            AudioMessageItem(
-                                username = message.username,
-                                onPlay = {
-                                    player.playAudio(message.fileUri)
-                                         },
-                                onStop = {
-                                    player.stopAudio()
-                                },
-                                viewModel = audioPlayerViewModel
-                            )
+                            Row(
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            ) {
+                                AudioMessageItem(
+                                    audioMessage = message,
+                                    onPlay = {
+                                        audioPlayerViewModel.selectAudioMessage(message)
+                                        player.playAudio(message)
+                                    },
+                                    onStop = {
+                                        player.stopAudio()
+                                    },
+                                    viewModel = audioPlayerViewModel
+                                )
+                            }
                         }
                     }
                 }

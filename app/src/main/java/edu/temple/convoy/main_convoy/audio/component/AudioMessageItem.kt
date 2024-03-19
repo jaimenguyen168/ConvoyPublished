@@ -32,18 +32,23 @@ import edu.temple.convoy.ui.components.CustomRoundButton
 
 @Composable
 fun AudioMessageItem (
-    username: String,
+    audioMessage: AudioMessage,
     onPlay: () -> Unit,
     onStop: () -> Unit,
     viewModel: AudioPlayerViewModel
 ) {
     val isPlaying by viewModel.isPlaying.collectAsState()
+    val selectedAudioMessage by viewModel.selectedAudioMessage.collectAsState()
+
+    val nowPlaying = isPlaying && audioMessage == selectedAudioMessage
+
+    val color = if (audioMessage.hasBeenPlayed) Color.LightGray else MaterialTheme.colors.primary
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
-            .background(color = MaterialTheme.colors.primary, shape = RoundedCornerShape(16.dp))
+            .background(color = color, shape = RoundedCornerShape(16.dp))
             .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         Row(
@@ -60,13 +65,13 @@ fun AudioMessageItem (
             ) {
                 CustomRoundButton(
                     modifier = Modifier.wrapContentSize(),
-                    icon = if (isPlaying) {
+                    icon = if (nowPlaying) {
                         R.drawable.baseline_pause_24
                     } else {
                         R.drawable.baseline_play_arrow_24
                     },
                     onClick = {
-                        if (isPlaying) {
+                        if (nowPlaying) {
                             onStop()
                         } else {
                             onPlay()
@@ -81,13 +86,13 @@ fun AudioMessageItem (
                     .weight(1f),
             ) {
                 Text(
-                    text = username,
+                    text = audioMessage.username,
                     style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White,
                 )
 
-                if (isPlaying) {
+                if (nowPlaying) {
                     Text(
                         text = "Now playing...",
                         style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
@@ -100,9 +105,3 @@ fun AudioMessageItem (
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewItem() {
-//    AudioMessageItem("Jaime", {}) {}
-//}

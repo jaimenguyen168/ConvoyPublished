@@ -21,7 +21,7 @@ import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLSocketFactory
 
-data class AudioMessage(val username: String, val fileUri: Uri)
+data class AudioMessage(val id: Long = 0L, val username: String, val fileUri: Uri, val hasBeenPlayed: Boolean = false)
 class AudioPlayerViewModel: ViewModel() {
 
     private val _audioMessages = MutableStateFlow<List<AudioMessage>>(emptyList())
@@ -30,8 +30,30 @@ class AudioPlayerViewModel: ViewModel() {
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying = _isPlaying.asStateFlow()
 
+    private val _selectedAudioMessage = MutableStateFlow<AudioMessage?>(null)
+    val selectedAudioMessage: StateFlow<AudioMessage?> = _selectedAudioMessage
+
+    fun selectAudioMessage(audioMessage: AudioMessage) {
+        _selectedAudioMessage.value = audioMessage
+    }
+
+    fun releaseSelectedAudioMessage() {
+        _selectedAudioMessage.value = null
+    }
+
     fun clearAudioMessages() {
         _audioMessages.value = emptyList()
+    }
+
+    fun updateAudioMessagePlayedStatus(messageId: Long) {
+        val updatedMessages = _audioMessages.value.map { message ->
+            if (message.id == messageId) {
+                message.copy(hasBeenPlayed = true)
+            } else {
+                message
+            }
+        }
+        _audioMessages.value = updatedMessages
     }
 
     fun nowPlaying() {
@@ -44,10 +66,14 @@ class AudioPlayerViewModel: ViewModel() {
         Log.d("AudioMessage in ViewModel", "Audio message in VM has stopped. Value ${_isPlaying.value}")
     }
 
+    private var messageIdCounter = 0L
+
+    private fun generateMessageId(): Long = ++messageIdCounter
+
     suspend fun downloadAndAddMessage(context: Context, username: String, messageUrl: String) {
         viewModelScope.launch {
             val fileUri = downloadAudio(context, messageUrl)
-            val audioMessage = fileUri?.let { AudioMessage(username, it) }
+            val audioMessage = fileUri?.let { AudioMessage(generateMessageId(), username, it) }
             audioMessage?.let { audioMessage ->
                 _audioMessages.value += audioMessage
             }
