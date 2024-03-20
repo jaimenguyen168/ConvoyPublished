@@ -86,7 +86,15 @@ fun ConvoyScreen(
     var showEndConvoyDialog by remember { mutableStateOf(false) }
     var showLeaveConvoyDialog by remember { mutableStateOf(false) }
     var showRecorder by remember { mutableStateOf(false) }
+
     val audioMessages by audioPlayerViewModel.audioMessages.collectAsState()
+    LaunchedEffect(audioMessages) {
+        val newMessages = audioMessages.filter { !it.hasBeenPlayed }
+        if (newMessages.isNotEmpty()) {
+            player.playAudio(newMessages.first())
+            audioPlayerViewModel.selectAudioMessage(newMessages.first())
+        }
+    }
 
     val sheetState = rememberModalBottomSheetState()
 
@@ -211,10 +219,9 @@ fun ConvoyScreen(
                     )
                 }
 
-                //                    val filteredMessages = audioMessages.filter { message-> message.username != username }
-//                    val reversedMessages = filteredMessages.reversed()
                 if (audioMessages.isNotEmpty()) {
-                    val reversedMessages = audioMessages
+                    val filteredMessages = audioMessages.filter { message-> message.username != username }
+                    val reversedMessages = filteredMessages.reversed()
 
                     LazyColumn {
                         items(reversedMessages.size) {i ->

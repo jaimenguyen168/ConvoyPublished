@@ -79,6 +79,7 @@ class MainActivity : ComponentActivity(), LocationApp.FCMCallback {
                     messageReceived.username?.let { username ->
                         val messageUrl = messageReceived.message_file
                         if (messageUrl != null) {
+                            Log.d("SuccessAudio", "Adding new message")
                             audioPlayerViewModel.downloadAndAddMessage(applicationContext, username, messageUrl)
                         } else {
                             Log.d("FailAudio", "There's a problem with getting the file")
